@@ -1,0 +1,4 @@
+%{"bunt": {:hex, :bunt, "0.2.0", "951c6e801e8b1d2cbe58ebbd3e616a869061ddadcc4863d0a2182541acae9a38", [], [], "hexpm"},
+  "credo": {:hex, :credo, "0.8.7", "b1aad9cd3aa7acdbaea49765bfc9f1605dc4555023a037dc9ea7a70539615bc8", [], [{:bunt, "~> 0.2.0", [hex: :bunt, repo: "hexpm", optional: false]}], "hexpm"},
+  "floki": {:hex, :floki, "0.18.0", "643d5e4bb325905328d250760ea622faebac4f7e1521f770d35fbb43d8dd4f5f", [], [{:mochiweb, "~> 2.15", [hex: :mochiweb, repo: "hexpm", optional: false]}], "hexpm"},
+  "mochiweb": {:hex, :mochiweb, "2.15.0", "e1daac474df07651e5d17cc1e642c4069c7850dc4508d3db7263a0651330aacc", [], [], "hexpm"}}
