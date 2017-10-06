@@ -8,16 +8,30 @@ defmodule Premailex.HTMLInlineStyles do
   @doc false
   def process(html) do
     html
-    |> Floki.find("style")
+    |> Floki.find("style,link[rel=\"stylesheet\"][href]")
     |> Enum.map(&load_css(&1))
+    |> Enum.filter(&!is_nil(&1))
     |> Enum.reduce([], &Enum.concat(&1, &2))
     |> Enum.reduce(Floki.parse(html), &add_rule_set_to_html(&1, &2))
     |> normalize_style()
     |> Floki.raw_html
   end
 
-  defp load_css({"style", _, content}),
-    do: content |> Enum.join("\n") |> CSSParser.parse()
+  defp load_css({"style", _, content}) do
+    content
+    |> Enum.join("\n")
+    |> CSSParser.parse()
+  end
+  defp load_css({"link", attrs, _}),
+    do: load_css({"link", List.keyfind(attrs, "href", 0)})
+  defp load_css({"link", {"href", url}}) do
+    url
+    |> HTTPoison.get()
+    |> parse_url_response()
+  end
+
+  defp parse_url_response({:ok, %{body: resp}}), do: CSSParser.parse(resp)
+  defp parse_url_response(_), do: nil
 
   defp add_rule_set_to_html(%{selector: selector, rules: rules, specificity: specificity}, html) do
     html
