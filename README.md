@@ -41,8 +41,8 @@ Premailex.to_inline_css(html)
 ## Example with Bamboo
 
 ```elixir
-defp email(email, template) do
-  new_email()
+def welcome_email do
+  new_email
   |> subject("Email subject")
   |> to("test@example.com")
   |> from("test@example.com")
