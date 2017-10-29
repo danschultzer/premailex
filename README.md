@@ -2,11 +2,12 @@
 
 [![Build Status](https://travis-ci.org/danschultzer/premailex.svg?branch=master)](https://travis-ci.org/danschultzer/premailex)
 
-Preflight for your HTML emails. Adds inline styling, and proper plain text alternative.
+Preflight for your HTML emails. Adds inline styling, and converts HTML to plain text.
 
 ## Features
 
-* Add inline CSS properties from `<style>` tags
+* Add inline CSS properties from `<style>`
+* Add inline CSS properties from external `<link>` stylesheets
 * Transform HTML to plain text
 
 ## Installation
@@ -59,7 +60,6 @@ end
 
 ## Planned features
 
-- Load `<link>` style tags
 - Expand relative URL's
 
 ## LICENSE

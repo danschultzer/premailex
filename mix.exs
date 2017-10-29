@@ -35,7 +35,9 @@ defmodule Premailex.Mixfile do
   defp deps do
     [
       {:floki, "~> 0.18.0"},
-      {:credo, "~> 0.8", only: [:dev, :test], runtime: false}
+      {:httpoison, "~> 0.13"},
+      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
+      {:bypass, "~> 0.8", only: :test}
     ]
   end
 
