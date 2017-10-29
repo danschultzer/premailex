@@ -139,7 +139,7 @@ defmodule Premailex.CSSParser do
 
 
   @doc """
-  Transforms CSS map or array into string.
+  Transforms CSS map or list into string.
 
   ## Examples
 
