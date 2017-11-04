@@ -16,7 +16,7 @@ Preflight for your HTML emails. Adds inline styling, and converts HTML to plain 
 def deps do
   [
     # ...
-    {:premailex, github: "danschultzer/premailex"},
+    {:premailex, "~> 0.1.0"},
     # ...
   ]
 end
