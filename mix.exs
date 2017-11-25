@@ -1,7 +1,7 @@
 defmodule Premailex.Mixfile do
   use Mix.Project
 
-  @version "0.1.0"
+  @version "0.1.1"
 
   def project do
     [
@@ -34,7 +34,7 @@ defmodule Premailex.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:floki, "~> 0.18.0"},
+      {:floki, "~> 0.19.0"},
       {:httpoison, "~> 0.13"},
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
       {:bypass, "~> 0.8", only: :test},

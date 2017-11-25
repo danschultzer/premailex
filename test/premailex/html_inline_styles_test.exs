@@ -6,6 +6,7 @@ defmodule Premailex.HTMLInlineStylesTest do
 body,table,p,td,ul,ol {color:#333333; font-family:Arial, sans-serif; font-size:14px; line-height:22px;}
 
 h1, h2, h3, h4, p {margin: 0; padding: 0;}
+p:first-of-type {font-size:16px;font-weight:bold;}
 """
 
   @css_inline_content """
@@ -31,6 +32,7 @@ a:hover	{text-decoration: underline;}
   <table cellpadding="0" cellspacing="0" align="center" style="padding:20px; padding-top:0;">
     <tr>
       <td align="center">
+        <p>First paragraph</p>
         <p><a href="#" style="color:#999999; font-size:12px;">Test link</a></p>
       </td>
     </tr>
@@ -75,6 +77,7 @@ a:hover	{text-decoration: underline;}
 
     assert parsed =~ "<body style=\"color:#333333;font-family:Arial, sans-serif;font-size:14px;line-height:22px;\">"
     assert parsed =~ "<h1 style=\"color:#2eac6d;font-size:24px;line-height:24px !important;margin:0;padding:0;padding-bottom:8px;\">"
+    assert parsed =~ "<p style=\"background-color:#fff;color:#000 !important;font-family:Arial, sans-serif;font-size:16px;font-weight:bold;line-height:22px;margin:0;padding:0;\">First paragraph"
     assert parsed =~ "<p style=\"background-color:#fff;color:#000 !important;font-family:Arial, sans-serif;font-size:13px;line-height:22px;margin:0;padding:0;\">"
   end
 end
