@@ -72,22 +72,22 @@ defmodule Premailex.HTMLInlineStyles do
     |> Enum.reduce(html, &merge_style(&2, &1))
   end
 
-  defp merge_style(html, needle) do
-    Util.traverse(html, needle, fn {name, attrs, children} ->
-      style = ~r/\[SPEC\=([\d]+)\[(.[^\]\]]*)\]\]/
-              |> Regex.scan(attrs |> Enum.into(%{}) |> Map.get("style"))
-              |> Enum.map(fn [_, specificity, rule] ->
-                   %{specificity: specificity,
-                     rules: CSSParser.parse_rules(rule)}
-                 end)
-              |> CSSParser.merge()
-              |> CSSParser.to_string()
+  defp merge_style(html, needle),
+    do: Util.traverse_until_first(html, needle, &merge_style/1)
+  defp merge_style({name, attrs, children}) do
+    style = ~r/\[SPEC\=([\d]+)\[(.[^\]\]]*)\]\]/
+            |> Regex.scan(attrs |> Enum.into(%{}) |> Map.get("style"))
+            |> Enum.map(fn [_, specificity, rule] ->
+                  %{specificity: specificity,
+                    rules: CSSParser.parse_rules(rule)}
+                end)
+            |> CSSParser.merge()
+            |> CSSParser.to_string()
 
-      attrs = attrs
-              |> Enum.filter(fn {name, _} -> name != "style" end)
-              |> Enum.concat([{"style", style}])
+    attrs = attrs
+            |> Enum.filter(fn {name, _} -> name != "style" end)
+            |> Enum.concat([{"style", style}])
 
-      {name, attrs, children}
-    end)
+    {name, attrs, children}
   end
 end
