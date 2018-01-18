@@ -15,6 +15,8 @@ p    {color: #000 !important; font-size:12px; background-color:#000;}
 
 a {color: #e95757; text-decoration: underline;}
 a:hover	{text-decoration: underline;}
+
+p.duplicate {color: blue;}
 """
 
   @input """
@@ -34,6 +36,7 @@ a:hover	{text-decoration: underline;}
       <td align="center">
         <p>First paragraph</p>
         <p><a href="#" style="color:#999999; font-size:12px;">Test link</a></p>
+        <p class="duplicate">Testing duplicate</p>
       </td>
     </tr>
   </table>
@@ -45,7 +48,8 @@ a:hover	{text-decoration: underline;}
           <tr align="center">
             <td>
               <h1 style="font-size:24px; line-height:24px !important; padding-bottom:8px; color: #2eac6d;">Heading</h1>
-              <p style="color: #fff;background-color:#fff !important;font-size:11px;"><p>
+              <p style="color: #fff;background-color:#fff !important;font-size:11px;"></p>
+              <p class="duplicate">Testing duplicate</p>
             </td>
             <td align="right" valign="bottom"></td>
           </tr>
@@ -79,5 +83,6 @@ a:hover	{text-decoration: underline;}
     assert parsed =~ "<h1 style=\"color:#2eac6d;font-size:24px;line-height:24px !important;margin:0;padding:0;padding-bottom:8px;\">"
     assert parsed =~ "<p style=\"background-color:#fff;color:#000 !important;font-family:Arial, sans-serif;font-size:16px;font-weight:bold;line-height:22px;margin:0;padding:0;\">First paragraph"
     assert parsed =~ "<p style=\"background-color:#fff;color:#000 !important;font-family:Arial, sans-serif;font-size:13px;line-height:22px;margin:0;padding:0;\">"
+    refute parsed =~ "[SPEC="
   end
 end
