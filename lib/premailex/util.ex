@@ -24,41 +24,42 @@ defmodule Premailex.Util do
   @spec traverse(html_tree, needle, function) :: html_tree | {:halt, html_tree}
   def traverse(html, needles, fun) when is_list(needles),
     do: Enum.reduce(needles, html, &traverse(&2, &1, fun))
+
   def traverse(children, needle, fun) when is_list(children) do
     children
     |> Enum.map_reduce(:ok, &maybe_traverse({&1, needle, fun}, &2))
     |> case do
-        {children, :halt} -> {:halt, children}
-        {children, :ok}   -> children
-      end
-  end
-  def traverse(text, _, _) when is_binary(text),
-    do: text
-  def traverse({name, attrs, children} = element, needle, fun) do
-    cond do
-      needle == name    -> fun.(element)
-      needle == element -> fun.(element)
-      true              -> handle_traversed({name, attrs, children}, needle, fun)
+      {children, :halt} -> {:halt, children}
+      {children, :ok} -> children
     end
   end
-  def traverse({:comment, _}, _, _),
-    do: ""
-  def traverse(element, _, _),
-    do: element
+
+  def traverse(text, _, _) when is_binary(text), do: text
+
+  def traverse({name, attrs, children} = element, needle, fun) do
+    cond do
+      needle == name -> fun.(element)
+      needle == element -> fun.(element)
+      true -> handle_traversed({name, attrs, children}, needle, fun)
+    end
+  end
+
+  def traverse({:comment, _}, _, _), do: ""
+  def traverse(element, _, _), do: element
 
   defp maybe_traverse({element, needle, fun}, :ok) do
     case traverse(element, needle, fun) do
       {:halt, children} -> {children, :halt}
-      children          -> {children, :ok}
+      children -> {children, :ok}
     end
   end
-  defp maybe_traverse({element, _needle, _fun}, :halt),
-    do: {element, :halt}
+
+  defp maybe_traverse({element, _needle, _fun}, :halt), do: {element, :halt}
 
   defp handle_traversed({name, attrs, children}, needle, fun) do
     case traverse(children, needle, fun) do
       {:halt, children} -> {:halt, {name, attrs, children}}
-      children          -> {name, attrs, children}
+      children -> {name, attrs, children}
     end
   end
 
@@ -73,7 +74,12 @@ defmodule Premailex.Util do
   """
   @spec traverse_reduce(list, needle, function) :: {html_tree, integer}
   def traverse_reduce(children, needle, fun) when is_list(children),
-    do: Enum.map_reduce(children, 0, &{traverse(&1, needle, fn element -> fun.(element, &2) end), &2 + 1})
+    do:
+      Enum.map_reduce(
+        children,
+        0,
+        &{traverse(&1, needle, fn element -> fun.(element, &2) end), &2 + 1}
+      )
 
   @doc """
   Traverses tree until first match for needle.
@@ -87,7 +93,7 @@ defmodule Premailex.Util do
   def traverse_until_first(html, needle, fun) do
     case traverse(html, needle, &{:halt, fun.(&1)}) do
       {:halt, html} -> html
-      html          -> html
+      html -> html
     end
   end
 end

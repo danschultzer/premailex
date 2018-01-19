@@ -45,6 +45,7 @@ defmodule Premailex.CSSParser do
          specificity: 1}]
   """
   def parse(""), do: []
+
   def parse(css) do
     @css_selector_rules
     |> Regex.scan(css)
@@ -59,7 +60,11 @@ defmodule Premailex.CSSParser do
   end
 
   defp parse_selector_rules(selector, rules) do
-    %{selector: String.trim(selector), rules: parse_rules(rules), specificity: calculate_specificity(selector)}
+    %{
+      selector: String.trim(selector),
+      rules: parse_rules(rules),
+      specificity: calculate_specificity(selector)
+    }
   end
 
   @doc """
@@ -75,7 +80,7 @@ defmodule Premailex.CSSParser do
     rules
     |> String.split(";")
     |> Enum.map(&parse_rule(&1))
-    |> Enum.filter(&!is_nil(&1))
+    |> Enum.filter(&(!is_nil(&1)))
   end
 
   defp parse_rule(rule) when is_binary(rule) do
@@ -86,15 +91,17 @@ defmodule Premailex.CSSParser do
   end
 
   defp parse_rule([directive, value]) do
-    %{directive: String.trim(directive),
+    %{
+      directive: String.trim(directive),
       value: String.trim(value),
-      important?: String.contains?(value, "!important")}
+      important?: String.contains?(value, "!important")
+    }
   end
+
   defp parse_rule([""]), do: nil
+
   defp parse_rule([value]) do
-    %{directive: "",
-      value: String.trim(value),
-      important?: String.contains?(value, "!important")}
+    %{directive: "", value: String.trim(value), important?: String.contains?(value, "!important")}
   end
 
   @doc """
@@ -109,8 +116,8 @@ defmodule Premailex.CSSParser do
   def merge(rule_sets) do
     rule_sets
     |> Enum.map(fn rule_set ->
-         Enum.map(rule_set.rules, &Map.put(&1, :specificity, rule_set.specificity))
-       end)
+      Enum.map(rule_set.rules, &Map.put(&1, :specificity, rule_set.specificity))
+    end)
     |> Enum.reduce([], &Enum.concat(&2, &1))
     |> merge_rule_sets
   end
@@ -128,15 +135,17 @@ defmodule Premailex.CSSParser do
     cond do
       is_nil(rule) ->
         Map.put(rule_set, new_rule.directive, new_rule)
+
       new_rule.important? and (!rule.important? or rule.specificity <= new_rule.specificity) ->
         Map.put(rule_set, new_rule.directive, new_rule)
+
       !rule.important? and rule.specificity <= new_rule.specificity ->
         Map.put(rule_set, new_rule.directive, new_rule)
+
       true ->
         rule_set
     end
   end
-
 
   @doc """
   Transforms CSS map or list into string.
@@ -151,8 +160,8 @@ defmodule Premailex.CSSParser do
   """
   def to_string(rules) when is_list(rules),
     do: Enum.reduce(rules, "", &"#{&2}#{__MODULE__.to_string(&1)}")
-  def to_string(%{directive: directive, value: value}),
-    do: "#{directive}:#{value};"
+
+  def to_string(%{directive: directive, value: value}), do: "#{directive}:#{value};"
 
   defp calculate_specificity(selector) do
     b = ~r/\#/ |> Regex.scan(selector) |> length()

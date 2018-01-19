@@ -1,11 +1,17 @@
 language: elixir
-elixir:
-  - 1.5
-otp_release:
-  - 19.0
 script:
   - mix deps.compile
   - mix test
   - mix credo
+  - if [ $CHECK_FORMAT ]; then mix format mix.exs "lib/**/*.{ex,exs}" "test/**/*.{ex,exs}" --check-formatted; fi
 env:
   - MIX_ENV=test
+matrix:
+  include:
+    - elixir: 1.5
+      otp_release: 19.0
+    - elixir: 1.6
+      otp_release: 20.0
+      env:
+        - MIX_ENV=test
+        - CHECK_FORMAT=true

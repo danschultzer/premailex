@@ -3,12 +3,25 @@ defmodule Premailex.UtilTest do
   doctest Premailex.Util
 
   test "traverse_until_first/3 deep nested" do
-    div_children = [{"p", [], ["Paragraph"]}, {"p", [], ["Paragraph"]}]
-    html = {"div", [], [{"div", [], div_children}, {"div", [], div_children}]}
+    html =
+      {"div", [],
+       [
+         {"div", [], [{"p", [], ["Paragraph"]}, {"p", [], ["Paragraph"]}]},
+         {"div", [], [{"p", [], ["Paragraph"]}, {"p", [], ["Paragraph"]}]}
+       ]}
+
     needle = {"p", [], ["Paragraph"]}
 
-    result = Premailex.Util.traverse_until_first(html, needle, fn {name, attrs, _children} -> {name, attrs, ["Updated"]} end)
+    result =
+      Premailex.Util.traverse_until_first(html, needle, fn {name, attrs, _children} ->
+        {name, attrs, ["Updated"]}
+      end)
 
-    assert result == {"div", [], [{"div", [], [{"p", [], ["Updated"]}, {"p", [], ["Paragraph"]}]}, {"div", [], [{"p", [], ["Paragraph"]}, {"p", [], ["Paragraph"]}]}]}
+    assert result ==
+             {"div", [],
+              [
+                {"div", [], [{"p", [], ["Updated"]}, {"p", [], ["Paragraph"]}]},
+                {"div", [], [{"p", [], ["Paragraph"]}, {"p", [], ["Paragraph"]}]}
+              ]}
   end
 end

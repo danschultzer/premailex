@@ -16,7 +16,6 @@ defmodule Premailex do
     Premailex.HTMLInlineStyles.process(html)
   end
 
-
   @doc """
   Turns an HTML string into text.
 

@@ -10,11 +10,11 @@ defmodule Premailex.HTMLInlineStyles do
     html
     |> Floki.find("style,link[rel=\"stylesheet\"][href]")
     |> Enum.map(&load_css(&1))
-    |> Enum.filter(&!is_nil(&1))
+    |> Enum.filter(&(!is_nil(&1)))
     |> Enum.reduce([], &Enum.concat(&1, &2))
     |> Enum.reduce(Floki.parse(html), &add_rule_set_to_html(&1, &2))
     |> normalize_style()
-    |> Floki.raw_html
+    |> Floki.raw_html()
   end
 
   defp load_css({"style", _, content}) do
@@ -22,8 +22,9 @@ defmodule Premailex.HTMLInlineStyles do
     |> Enum.join("\n")
     |> CSSParser.parse()
   end
-  defp load_css({"link", attrs, _}),
-    do: load_css({"link", List.keyfind(attrs, "href", 0)})
+
+  defp load_css({"link", attrs, _}), do: load_css({"link", List.keyfind(attrs, "href", 0)})
+
   defp load_css({"link", {"href", url}}) do
     url
     |> HTTPoison.get()
@@ -44,15 +45,17 @@ defmodule Premailex.HTMLInlineStyles do
   end
 
   defp update_style_for_element({name, attrs, children}, rules, specificity) do
-    style = attrs
-            |> Enum.into(%{})
-            |> Map.get("style", nil)
-            |> set_inline_style_specificity()
-            |> add_styles_with_specificity(rules, specificity)
+    style =
+      attrs
+      |> Enum.into(%{})
+      |> Map.get("style", nil)
+      |> set_inline_style_specificity()
+      |> add_styles_with_specificity(rules, specificity)
 
-    attrs = attrs
-            |> Enum.filter(fn {name, _} -> name != "style" end)
-            |> Enum.concat([{"style", style}])
+    attrs =
+      attrs
+      |> Enum.filter(fn {name, _} -> name != "style" end)
+      |> Enum.concat([{"style", style}])
 
     {name, attrs, children}
   end
@@ -76,18 +79,19 @@ defmodule Premailex.HTMLInlineStyles do
   end
 
   defp merge_style({name, attrs, children}) do
-    style = ~r/\[SPEC\=([\d]+)\[(.[^\]\]]*)\]\]/
-            |> Regex.scan(attrs |> Enum.into(%{}) |> Map.get("style"))
-            |> Enum.map(fn [_, specificity, rule] ->
-                  %{specificity: specificity,
-                    rules: CSSParser.parse_rules(rule)}
-                end)
-            |> CSSParser.merge()
-            |> CSSParser.to_string()
+    style =
+      ~r/\[SPEC\=([\d]+)\[(.[^\]\]]*)\]\]/
+      |> Regex.scan(attrs |> Enum.into(%{}) |> Map.get("style"))
+      |> Enum.map(fn [_, specificity, rule] ->
+        %{specificity: specificity, rules: CSSParser.parse_rules(rule)}
+      end)
+      |> CSSParser.merge()
+      |> CSSParser.to_string()
 
-    attrs = attrs
-            |> Enum.filter(fn {name, _} -> name != "style" end)
-            |> Enum.concat([{"style", style}])
+    attrs =
+      attrs
+      |> Enum.filter(fn {name, _} -> name != "style" end)
+      |> Enum.concat([{"style", style}])
 
     {name, attrs, children}
   end
