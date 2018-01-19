@@ -1,6 +1,6 @@
 # Premailex
 
-[![Build Status](https://travis-ci.org/danschultzer/premailex.svg?branch=master)](https://travis-ci.org/danschultzer/premailex)
+[![Build Status](https://travis-ci.org/danschultzer/premailex.svg?branch=master)](https://travis-ci.org/danschultzer/premailex) [![hex.pm](http://img.shields.io/hexpm/v/premailex.svg?style=flat)](https://hex.pm/packages/premailex) [![hex.pm downloads](https://img.shields.io/hexpm/dt/premailex.svg?style=flat)](https://hex.pm/packages/premailex)
 
 Preflight for your HTML emails. Adds inline styling, and converts HTML to plain text.
 
