@@ -32,6 +32,7 @@ defmodule Premailex.CSSParser do
       |selection
     )
   )/ix
+  @comments ~r/\/\*[\s\S]*?\*\//m
 
   @doc """
   Parses a CSS string into a map.
@@ -48,7 +49,7 @@ defmodule Premailex.CSSParser do
 
   def parse(css) do
     @css_selector_rules
-    |> Regex.scan(css)
+    |> Regex.scan(strip_comments(css))
     |> Enum.map(&parse_selectors_rules(&1))
     |> Enum.reduce([], &Enum.concat(&2, &1))
   end
@@ -69,6 +70,8 @@ defmodule Premailex.CSSParser do
 
   @doc """
   Parses a CSS rules string into a map.
+
+  Note: `parse_rules/1` won't strip any CSS comments unlike `parse/1`.
 
   ## Examples
 
@@ -102,6 +105,10 @@ defmodule Premailex.CSSParser do
 
   defp parse_rule([value]) do
     %{directive: "", value: String.trim(value), important?: String.contains?(value, "!important")}
+  end
+
+  defp strip_comments(string) do
+    String.replace(string, @comments, "")
   end
 
   @doc """

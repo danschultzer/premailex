@@ -3,8 +3,11 @@ defmodule Premailex.CSSParserTest do
   doctest Premailex.CSSParser
 
   @input """
-  body, table {background-color:#ffffff;color:#000000;}
+  body, table {/* text-decoration:underline */background-color:#ffffff;color:#000000;}
   div p > a:hover {color:#000000 !important;text-decoration:underline}
+  /*div {
+    padding:10px
+  }*/
   """
 
   @parsed [
