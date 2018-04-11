@@ -79,7 +79,7 @@ defmodule Premailex.HTMLInlineStylesTest do
       Plug.Conn.resp(conn, 500, "{}")
     end)
 
-    parsed = Premailex.HTMLInlineStyles.process(input)
+    parsed = Premailex.HTMLInlineStyles.process(input, "style,link[rel=\"stylesheet\"][href]")
 
     assert parsed =~
              "<body style=\"color:#333333;font-family:Arial, sans-serif;font-size:14px;line-height:22px;\">"

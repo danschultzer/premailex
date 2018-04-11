@@ -6,15 +6,20 @@ defmodule Premailex.HTMLInlineStyles do
   alias Premailex.{CSSParser, Util}
 
   @doc false
-  def process(html) do
-    html
-    |> Floki.find("style,link[rel=\"stylesheet\"][href]")
+  def process(html, css_selector) do
+    tree = html
+      |> Meeseeks.parse()
+      |> Meeseeks.tree()
+
+    tree
+    |> Floki.find(css_selector)
     |> Enum.map(&load_css(&1))
     |> Enum.filter(&(!is_nil(&1)))
     |> Enum.reduce([], &Enum.concat(&1, &2))
-    |> Enum.reduce(Floki.parse(html), &add_rule_set_to_html(&1, &2))
+    |> Enum.reduce(tree, &add_rule_set_to_html(&1, &2))
     |> normalize_style()
-    |> Floki.raw_html()
+    |> Meeseeks.parse()
+    |> Meeseeks.html()
   end
 
   defp load_css({"style", _, content}) do
