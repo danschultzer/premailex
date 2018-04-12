@@ -12,7 +12,7 @@
   "html_entities": {:hex, :html_entities, "0.4.0", "f2fee876858cf6aaa9db608820a3209e45a087c5177332799592142b50e89a6b", [:mix], [], "hexpm"},
   "httpoison": {:hex, :httpoison, "1.0.0", "1f02f827148d945d40b24f0b0a89afe40bfe037171a6cf70f2486976d86921cd", [:mix], [{:hackney, "~> 1.8", [hex: :hackney, repo: "hexpm", optional: false]}], "hexpm"},
   "idna": {:hex, :idna, "5.1.0", "d72b4effeb324ad5da3cab1767cb16b17939004e789d8c0ad5b70f3cea20c89a", [:rebar3], [{:unicode_util_compat, "0.3.1", [hex: :unicode_util_compat, repo: "hexpm", optional: false]}], "hexpm"},
-  "meeseeks": {:hex, :meeseeks, "0.7.7", "ade528b30b3db7bbfa9bb4452f2a2f93b0875ad0b5683a73706c598eb8d2aa35", [:mix], [{:meeseeks_html5ever, "~> 0.8.1", [hex: :meeseeks_html5ever, repo: "hexpm", optional: false]}], "hexpm"},
+  "meeseeks": {:git, "git@github.com:change/meeseeks", "56aaacc1fa559b65e73882112adb45774db92e98", [ref: "wbarrett/add-delete-node"]},
   "meeseeks_html5ever": {:hex, :meeseeks_html5ever, "0.8.1", "8b10ad450d31b99408e570fab5f8e26aad9fa1cd2d6da0b99b5aa0a216809896", [:mix], [{:rustler, "~> 0.16", [hex: :rustler, repo: "hexpm", optional: false]}], "hexpm"},
   "metrics": {:hex, :metrics, "1.0.1", "25f094dea2cda98213cecc3aeff09e940299d950904393b2a29d191c346a8486", [:rebar3], [], "hexpm"},
   "mime": {:hex, :mime, "1.1.0", "01c1d6f4083d8aa5c7b8c246ade95139620ef8effb009edde934e0ec3b28090a", [:mix], [], "hexpm"},

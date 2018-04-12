@@ -4,21 +4,31 @@ defmodule Premailex.HTMLInlineStyles do
   """
 
   alias Premailex.{CSSParser, Util}
+  import Meeseeks.CSS
 
   @doc false
   def process(html, css_selector) do
     tree = html
-      |> Meeseeks.parse()
-      |> Meeseeks.tree()
+    |> Meeseeks.parse()
+    |> Meeseeks.tree()
 
-    tree
-    |> Floki.find(css_selector)
+    css_elements = tree
+    |> Meeseeks.parse()
+    |> Meeseeks.all(css("#{css_selector}"))
+
+    inlined_tree = css_elements
+    |> Enum.map(fn match -> Meeseeks.tree(match) end)
     |> Enum.map(&load_css(&1))
     |> Enum.filter(&(!is_nil(&1)))
     |> Enum.reduce([], &Enum.concat(&1, &2))
     |> Enum.reduce(tree, &add_rule_set_to_html(&1, &2))
     |> normalize_style()
     |> Meeseeks.parse()
+
+    css_elements
+    |> Enum.reduce(inlined_tree, fn e, acc ->
+      Meeseeks.Document.delete_node(acc, e.id)
+    end)
     |> Meeseeks.html()
   end
 
