@@ -50,6 +50,7 @@ defmodule Premailex.HTMLInlineStylesTest do
                 <h1 style="font-size:24px; line-height:24px !important; padding-bottom:8px; color: #2eac6d;">Heading</h1>
                 <p style="color: #fff;background-color:#fff !important;font-size:11px;"></p>
                 <p class="duplicate">Testing duplicate</p>
+                <p><span>consecutive</span> <span>tags</span></p>
               </td>
               <td align="right" valign="bottom"></td>
             </tr>
@@ -92,6 +93,9 @@ defmodule Premailex.HTMLInlineStylesTest do
 
     assert parsed =~
              "<p style=\"background-color:#fff;color:#000 !important;font-family:Arial, sans-serif;font-size:13px;line-height:22px;margin:0;padding:0;\">"
+
+    # Ensure that whitespace is maintained when it would affect display
+    assert parsed =~ "<span>consecutive</span> <span>tags</span>"
 
     refute parsed =~ "[SPEC="
   end
