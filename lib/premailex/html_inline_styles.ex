@@ -17,7 +17,7 @@ defmodule Premailex.HTMLInlineStyles do
     |> Meeseeks.all(css("#{css_selector}"))
 
     inlined_tree = css_elements
-    |> Enum.map(fn match -> Meeseeks.tree(match) end)
+    |> Enum.map(&Meeseeks.tree/1)
     |> Enum.map(&load_css(&1))
     |> Enum.filter(&(!is_nil(&1)))
     |> Enum.reduce([], &Enum.concat(&1, &2))
