@@ -9,11 +9,11 @@ defmodule Premailex do
   ## Examples
 
       iex> Premailex.to_inline_css("<html><head><style>p{background-color: #fff;}</style></head><body><p style=\\\"color: #000;\\\">Text</p></body></html>")
-      "<html><head><style>p{background-color: #fff;}</style></head><body><p style=\\\"background-color:#fff;color:#000;\\\">Text</p></body></html>"
+      "<html><head></head><body><p style=\\\"background-color:#fff;color:#000;\\\">Text</p></body></html>"
 
   """
-  def to_inline_css(html) do
-    Premailex.HTMLInlineStyles.process(html)
+  def to_inline_css(html, css_selector \\ "style,link[rel=\"stylesheet\"][href]") do
+    Premailex.HTMLInlineStyles.process(html, css_selector)
   end
 
   @doc """
