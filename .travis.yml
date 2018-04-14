@@ -15,3 +15,12 @@ matrix:
       env:
         - MIX_ENV=test
         - CHECK_FORMAT=true
+    - elixir: 1.6
+      otp_release: 20.0
+      env:
+        - HTML_PARSER=meeseeks
+
+# Required for meeseeks
+before_install:
+  - curl https://sh.rustup.rs | sh -s -- -y
+  - export PATH="$HOME/.cargo/bin:$PATH"

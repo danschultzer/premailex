@@ -61,6 +61,14 @@ defp premail(email) do
 end
 ```
 
+## HTML parser
+
+By default, premailex uses [`Floki`](https://github.com/philss/floki) to parse HTML, but you can exchange it for any HTML parser you prefer. [`Meeseeks`](https://github.com/mischov/meeseeks) is supported with the [`Premailex.HTMLParser.Meeseeks`](/lib/premailex/html_parser/meeseeks.ex) module. To use it, add the following to `config.exs`:
+
+```elixir
+config :premailex, html_parser: Premailex.HTMLParser.Meeseeks
+```
+
 ## Planned features
 
 - Expand relative URL's
