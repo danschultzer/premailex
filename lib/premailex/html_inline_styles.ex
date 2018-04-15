@@ -6,6 +6,7 @@ defmodule Premailex.HTMLInlineStyles do
   alias Premailex.{CSSParser, HTMLParser, Util}
 
   @doc false
+  @spec process(String.t()) :: String.t()
   def process(html) do
     tree = HTMLParser.parse(html)
 

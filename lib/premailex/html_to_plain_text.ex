@@ -2,7 +2,6 @@ defmodule Premailex.HTMLToPlainText do
   @moduledoc """
   Module that converts HTML emails to plain text.
   """
-
   alias Premailex.Util
 
   @doc """
@@ -14,6 +13,7 @@ defmodule Premailex.HTMLToPlainText do
       "* Test"
 
   """
+  @spec process(String.t() | Util.html_tree()) :: String.t()
   def process(html) when is_binary(html), do: html |> Floki.parse() |> process()
 
   def process(html) do

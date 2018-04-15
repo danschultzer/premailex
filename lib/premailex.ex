@@ -12,6 +12,7 @@ defmodule Premailex do
       "<html><head><style>p{background-color: #fff;}</style></head><body><p style=\\\"background-color:#fff;color:#000;\\\">Text</p></body></html>"
 
   """
+  @spec to_inline_css(String.t()) :: String.t()
   def to_inline_css(html) do
     Premailex.HTMLInlineStyles.process(html)
   end
@@ -25,6 +26,7 @@ defmodule Premailex do
       "Text"
 
   """
+  @spec to_text(String.t()) :: String.t()
   def to_text(html) do
     html
     |> Floki.find("body")

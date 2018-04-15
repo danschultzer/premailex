@@ -3,6 +3,9 @@ defmodule Premailex.CSSParser do
   Module that handles CSS parsing with naive Regular Expression.
   """
 
+  @type rule :: %{directive: String.t(), value: String.t(), important?: boolean}
+  @type rule_set :: %{rules: [rule], selector: String.t(), specificity: number}
+
   @css_selector_rules ~r/([\s\S]*?){([\s\S]*?)}/mi
 
   @non_id_attributes_and_pseudo_classes ~r/
@@ -45,6 +48,7 @@ defmodule Premailex.CSSParser do
          selector: "body",
          specificity: 1}]
   """
+  @spec parse(String.t()) :: [rule_set]
   def parse(""), do: []
 
   def parse(css) do
@@ -79,6 +83,7 @@ defmodule Premailex.CSSParser do
       [%{directive: "background-color", value: "#fff", important?: false},
        %{directive: "color", value: "red", important?: false}]
   """
+  @spec parse_rules(String.t()) :: [rule]
   def parse_rules(rules) do
     rules
     |> String.split(";")
@@ -116,10 +121,12 @@ defmodule Premailex.CSSParser do
 
   ## Examples
 
-      iex> "p {background-color: #fff !important; color: #000;} p {background-color: #000;}" |> Premailex.CSSParser.parse() |> Premailex.CSSParser.merge()
+      iex> rule_sets = Premailex.CSSParser.parse("p {background-color: #fff !important; color: #000;} p {background-color: #000;}")
+      iex> Premailex.CSSParser.merge(rule_sets)
       [%{directive: "background-color", value: "#fff !important", important?: true, specificity: 1},
        %{directive: "color", value: "#000", important?: false, specificity: 1}]
   """
+  @spec merge([rule_set]) :: [rule_set]
   def merge(rule_sets) do
     rule_sets
     |> Enum.map(fn rule_set ->
@@ -165,6 +172,7 @@ defmodule Premailex.CSSParser do
       iex> Premailex.CSSParser.to_string(%{directive: "background-color", value: "#fff"})
       "background-color:#fff;"
   """
+  @spec to_string([rule]) :: String.t()
   def to_string(rules) when is_list(rules),
     do: Enum.reduce(rules, "", &"#{&2}#{__MODULE__.to_string(&1)}")
 
