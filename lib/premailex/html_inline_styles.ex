@@ -3,18 +3,20 @@ defmodule Premailex.HTMLInlineStyles do
   Module that processes inline styling in HMTL.
   """
 
-  alias Premailex.{CSSParser, Util}
+  alias Premailex.{CSSParser, HTMLParser, Util}
 
   @doc false
   def process(html) do
-    html
-    |> Floki.find("style,link[rel=\"stylesheet\"][href]")
+    tree = HTMLParser.parse(html)
+
+    tree
+    |> HTMLParser.all("style,link[rel=\"stylesheet\"][href]")
     |> Enum.map(&load_css(&1))
     |> Enum.filter(&(!is_nil(&1)))
     |> Enum.reduce([], &Enum.concat(&1, &2))
-    |> Enum.reduce(Floki.parse(html), &add_rule_set_to_html(&1, &2))
+    |> Enum.reduce(tree, &add_rule_set_to_html(&1, &2))
     |> normalize_style()
-    |> Floki.raw_html()
+    |> HTMLParser.to_string()
   end
 
   defp load_css({"style", _, content}) do
