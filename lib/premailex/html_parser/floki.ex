@@ -2,22 +2,28 @@ defmodule Premailex.HTMLParser.Floki do
   @moduledoc """
   API connection with Floki
   """
+  alias Premailex.HTMLParser
 
   @doc false
-  @spec parse(String.t()) :: tuple
+  @spec parse(String.t()) :: HTMLParser.html_tree()
   def parse(html) do
     Floki.parse(html)
   end
 
   @doc false
-  @spec all(tuple, String.t()) :: [tuple]
+  @spec all(HTMLParser.html_tree(), String.t()) :: [HTMLParser.html_tree()]
   def all(tree, selector) do
     Floki.find(tree, selector)
   end
 
   @doc false
-  @spec to_string(tuple) :: String.t()
+  @spec to_string(HTMLParser.html_tree()) :: String.t()
   def to_string(tree) do
     Floki.raw_html(tree)
+  end
+
+  @spec text(HTMLParser.html_tree()) :: String.t()
+  def text(tree) do
+    Floki.text(tree)
   end
 end

@@ -2,7 +2,7 @@ defmodule Premailex.HTMLToPlainText do
   @moduledoc """
   Module that converts HTML emails to plain text.
   """
-  alias Premailex.Util
+  alias Premailex.{HTMLParser, Util}
 
   @doc """
   Processes HTML string into a plain text string.
@@ -14,7 +14,11 @@ defmodule Premailex.HTMLToPlainText do
 
   """
   @spec process(String.t() | Util.html_tree()) :: String.t()
-  def process(html) when is_binary(html), do: html |> Floki.parse() |> process()
+  def process(html) when is_binary(html) do
+    html
+    |> HTMLParser.parse()
+    |> process()
+  end
 
   def process(html) do
     html
@@ -26,7 +30,7 @@ defmodule Premailex.HTMLToPlainText do
     |> unordered_lists()
     |> ordered_lists()
     |> tables()
-    |> Floki.text()
+    |> HTMLParser.text()
     |> wordwrap()
     |> clear_linebreaks()
     |> String.trim()
@@ -46,7 +50,7 @@ defmodule Premailex.HTMLToPlainText do
   defp headings(html), do: Util.traverse(html, Enum.map(1..6, &"h#{&1}"), &heading(&1))
 
   defp heading({type, _, content}) do
-    text = content |> Floki.text()
+    text = HTMLParser.text(content)
 
     length =
       text
@@ -54,22 +58,22 @@ defmodule Premailex.HTMLToPlainText do
       |> Enum.map(&String.length(&1))
       |> Enum.max()
 
-    "\n\n#{heading(type, text, length)}\n\n"
+    "\n\n" <> heading(type, text, length) <> "\n\n"
   end
 
   defp heading("h1", text, length) do
     heading_line = String.duplicate("*", length)
-    "#{heading_line}\n#{text}\n#{heading_line}"
+    heading_line <> "\n" <> text <> "\n" <> heading_line
   end
 
   defp heading("h2", text, length) do
     heading_line = String.duplicate("-", length)
-    "#{heading_line}\n#{text}\n#{heading_line}"
+    heading_line <> "\n" <> text <> "\n" <> heading_line
   end
 
   defp heading(_, text, length) do
     heading_line = String.duplicate("-", length)
-    "#{text}\n#{heading_line}"
+    text <> "\n" <> heading_line
   end
 
   defp links(html), do: Util.traverse(html, "a", &link(&1))
@@ -81,7 +85,7 @@ defmodule Premailex.HTMLToPlainText do
       |> elem(1)
       |> String.replace("mailto:", "")
 
-    text = Floki.text(content)
+    text = HTMLParser.text(content)
 
     link(String.trim(url), String.trim(text))
   end
@@ -92,7 +96,7 @@ defmodule Premailex.HTMLToPlainText do
   defp link(url, text, false), do: "#{text} (#{url})"
 
   defp paragraphs(html), do: Util.traverse(html, "p", &paragraph(&1))
-  defp paragraph({_, _, content}), do: "#{Floki.text(content)}\n\n"
+  defp paragraph({_, _, content}), do: HTMLParser.text(content) <> "\n\n"
 
   defp unordered_lists(html), do: Util.traverse(html, "ul", &unordered_list_items(&1))
 
@@ -102,7 +106,9 @@ defmodule Premailex.HTMLToPlainText do
     |> Enum.join("")
   end
 
-  defp unordered_list_item({_, _, content}), do: "* #{Floki.text(content)}\n"
+  defp unordered_list_item({_, _, content}) do
+    "* " <> HTMLParser.text(content) <> "\n"
+  end
 
   defp ordered_lists(html), do: Util.traverse(html, "ol", &ordered_list_items(&1))
 
@@ -113,23 +119,31 @@ defmodule Premailex.HTMLToPlainText do
     |> Enum.join("")
   end
 
-  defp ordered_list_item({_, _, content}, acc), do: "#{acc + 1}. #{Floki.text(content)}\n"
+  defp ordered_list_item({_, _, content}, acc) do
+    "#{acc + 1}. " <> HTMLParser.text(content) <> "\n"
+  end
 
   defp tables(html), do: Util.traverse(html, "table", &table(&1))
 
   defp table({_, _, table_rows}) do
-    # Callings tables/1 to make sure all nested tables have been processed
+    # Calling tables/1 to make sure all nested tables have been processed
     table_rows
     |> tables()
+    |> flatten_table_body()
     |> Util.traverse("tr", &table_rows(&1))
     |> Enum.join("\n")
   end
 
   defp table_rows({_, _, table_cells}) do
     table_cells
-    |> Util.traverse("td", &Floki.text(&1))
+    |> Util.traverse("td", &HTMLParser.text(&1))
     |> Enum.join(" ")
   end
+
+  defp flatten_table_body([tree]), do: flatten_table_body(tree)
+  defp flatten_table_body(list) when is_list(list), do: Enum.map(list, &flatten_table_body/1)
+  defp flatten_table_body({"tbody", [], table_cells}), do: table_cells
+  defp flatten_table_body(elem), do: elem
 
   defp wordwrap(text) do
     text

@@ -3,6 +3,8 @@ defmodule Premailex do
   Documentation for Premailex.
   """
 
+  alias Premailex.HTMLParser
+
   @doc """
   Adds inline styles to an HTML string
 
@@ -29,7 +31,7 @@ defmodule Premailex do
   @spec to_text(String.t()) :: String.t()
   def to_text(html) do
     html
-    |> Floki.find("body")
+    |> HTMLParser.all("body")
     |> Premailex.HTMLToPlainText.process()
   end
 end

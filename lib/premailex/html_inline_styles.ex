@@ -39,7 +39,7 @@ defmodule Premailex.HTMLInlineStyles do
 
   defp add_rule_set_to_html(%{selector: selector, rules: rules, specificity: specificity}, html) do
     html
-    |> Floki.find(selector)
+    |> HTMLParser.all(selector)
     |> Enum.reduce(html, &update_style_for_html(&2, &1, rules, specificity))
   end
 
@@ -73,7 +73,7 @@ defmodule Premailex.HTMLInlineStyles do
 
   defp normalize_style(html) do
     html
-    |> Floki.find("[style]")
+    |> HTMLParser.all("[style]")
     |> Enum.reduce(html, &merge_styles(&2, &1))
   end
 
