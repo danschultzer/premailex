@@ -27,7 +27,7 @@ defmodule Premailex.HTMLParser do
       iex> Premailex.HTMLParser.all({"html", [], [{"head", [], []}, {"body", [], [{"h1", [], ["Title"]}]}]}, "h1")
       [{"h1", [], ["Title"]}]
   """
-  @spec all(html_tree, String.t()) :: [tuple]
+  @spec all(html_tree, String.t()) :: [html_tree]
   def all(tree, selector) do
     apply(parser(), :all, [tree, selector])
   end

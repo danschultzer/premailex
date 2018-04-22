@@ -3,8 +3,8 @@ defmodule Premailex.Util do
   Module that contains utility functions.
   """
 
-  @type html_tree :: tuple | list
-  @type needle :: binary | tuple | list
+  @type html_tree :: Premailex.HTMLParser.html_tree()
+  @type needle :: binary | html_tree
 
   @doc """
   Traverses tree searching for needle, and will call provided function on
