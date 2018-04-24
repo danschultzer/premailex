@@ -46,5 +46,14 @@ if Code.ensure_loaded?(Meeseeks) do
     def text(text) when is_binary(text), do: text
     def text(list) when is_list(list), do: Enum.map_join(list, "", &text/1)
     def text({_element, _attrs, children}), do: text(children)
+
+    def delete_matching(tree, selector) do
+      tree
+      |> Meeseeks.all(css("#{selector}"))
+      |> Enum.reduce(Meeseeks.parse(tree), fn e, acc ->
+        Document.delete_node(acc, e.id)
+      end)
+      |> Meeseeks.tree()
+    end
   end
 end

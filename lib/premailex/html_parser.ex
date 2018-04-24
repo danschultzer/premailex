@@ -32,6 +32,11 @@ defmodule Premailex.HTMLParser do
     apply(parser(), :all, [tree, selector])
   end
 
+  @spec delete_matching(html_tree, String.t()) :: [html_tree]
+  def delete_matching(tree, selector) do
+    apply(parser(), :delete_matching, [tree, selector])
+  end
+
   @doc """
   Turns an HTML tree into a string.
 
