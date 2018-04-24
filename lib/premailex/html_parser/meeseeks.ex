@@ -6,7 +6,7 @@ defmodule Premailex.HTMLParser.Meeseeks do
   require Logger
   import Meeseeks.CSS
   alias Premailex.HTMLParser
-  alias Meeseeks.{Selector.CSS.Parser.ParseError}
+  alias Meeseeks.{Selector.CSS.Parser.ParseError.Document}
 
   @doc false
   @spec parse(String.t()) :: HTMLParser.html_tree()
@@ -32,6 +32,15 @@ defmodule Premailex.HTMLParser.Meeseeks do
         Logger.warn("Meeseeks CSS ParseError: " <> e.message)
         []
     end
+  end
+
+  def delete_matching(tree, selector) do
+    tree
+    |> Meeseeks.all(css("#{selector}"))
+    |> Enum.reduce(Meeseeks.parse(tree), fn e, acc ->
+      Document.delete_node(acc, e.id)
+    end)
+    |> Meeseeks.tree()
   end
 
   @doc false

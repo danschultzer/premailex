@@ -19,6 +19,7 @@ defmodule Premailex.HTMLInlineStyles do
     |> Enum.reduce([], &Enum.concat(&1, &2))
     |> Enum.reduce(tree, &add_rule_set_to_html(&1, &2))
     |> normalize_style()
+    |> HTMLParser.delete_matching(css_selector)
     |> HTMLParser.to_string()
   end
 
