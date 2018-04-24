@@ -6,6 +6,7 @@ if Code.ensure_loaded?(Meeseeks) do
     import Meeseeks.CSS
     alias Premailex.HTMLParser
     alias Meeseeks.Selector.CSS.Parser.ParseError
+    alias Meeseeks.Document
 
     @doc false
     @spec parse(String.t()) :: HTMLParser.html_tree()
