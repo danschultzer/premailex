@@ -6,7 +6,7 @@ defmodule Premailex do
   alias Premailex.HTMLParser
 
   @doc """
-  Adds inline styles to an HTML string
+  Adds inline styles to an HTML string.
 
   ## Examples
 
