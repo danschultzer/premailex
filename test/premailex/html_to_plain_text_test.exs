@@ -13,7 +13,7 @@ defmodule Premailex.HTMLToPlainTextTest do
   <p><a href="http://example.com">HTTP://EXAMPLE.COM</a></p>
   <p><a href="http://example.com"></a></p>
   <p><span>Test</span> some very long paragraph with <strong>bold</strong> and <i>italic</i> text, including an <a href="http://example.com">inline link</a>. This should break up on multiple lines.</p>
-  <p><span>Test</span> <strong>consecutive</strong> <i>tags</i>.</p>
+  <p><span>Test</span>   <strong>consecutive</strong> <i>tags</i>.</p>
 
   <img href="logo.png" alt="Test image" /><br/>
   <img href="logo.png" /><br/>

@@ -7,7 +7,9 @@ defmodule Premailex.HTMLParser.Floki do
   @doc false
   @spec parse(String.t()) :: HTMLParser.html_tree()
   def parse(html) do
-    Floki.parse(html)
+    html
+    |> retain_inline_whitespace()
+    |> Floki.parse()
   end
 
   @doc false
@@ -26,4 +28,10 @@ defmodule Premailex.HTMLParser.Floki do
   def text(tree) do
     Floki.text(tree)
   end
+
+  # """
+  # This is a tempory fix until mochweb (or floki) has been updated
+  # to correctly handle whitespace text nodes: https://github.com/mochi/mochiweb/issues/166
+  # """
+  defp retain_inline_whitespace(html), do: String.replace(html, ~r/\>[ ]+\</, ">&#32;<")
 end

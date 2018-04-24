@@ -20,8 +20,9 @@ defmodule Premailex.HTMLToPlainText do
     |> process()
   end
 
-  def process(html) do
-    html
+  def process(tree) do
+    tree
+    |> clear_whitespace()
     |> line_breaks()
     |> images()
     |> links()
@@ -171,4 +172,69 @@ defmodule Premailex.HTMLToPlainText do
   end
 
   defp clear_linebreaks(text), do: Regex.replace(~r/[\n]{3,}/, text, "\n\n")
+
+  defp clear_whitespace(list) when is_list(list) do
+    list = Enum.map(list, &clear_whitespace(&1))
+
+    list
+    |> Enum.all?(&is_inline_element?/1)
+    |> case do
+      true -> list
+      false -> Enum.reject(list, &is_empty?/1)
+    end
+  end
+
+  defp clear_whitespace({elem, attr, children}) do
+    {elem, attr, clear_whitespace(children)}
+  end
+
+  defp clear_whitespace(any), do: any
+
+  defp is_empty?(text) when is_binary(text) do
+    String.trim(text) == ""
+  end
+
+  defp is_empty?(_any), do: false
+
+  @inline_elements [
+    "a",
+    "abbr",
+    "acronym",
+    "b",
+    "bdo",
+    "big",
+    "br",
+    "button",
+    "cite",
+    "code",
+    "dfn",
+    "em",
+    "i",
+    "img",
+    "input",
+    "kbd",
+    "label",
+    "map",
+    "object",
+    "q",
+    "samp",
+    "script",
+    "select",
+    "small",
+    "span",
+    "strong",
+    "sub",
+    "sup",
+    "textarea",
+    "time",
+    "tt",
+    "var"
+  ]
+
+  defp is_inline_element?({element, _attrs, _children})
+       when element in @inline_elements,
+       do: true
+
+  defp is_inline_element?({_element, _attrs, _children}), do: false
+  defp is_inline_element?(_any), do: true
 end
