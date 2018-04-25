@@ -6,7 +6,7 @@ defmodule Premailex.HTMLParser.Meeseeks do
   require Logger
   import Meeseeks.CSS
   alias Premailex.HTMLParser
-  alias Meeseeks.{Selector.CSS.Parser.ParseError}
+  alias Meeseeks.Selector.CSS.Parser.ParseError
 
   @doc false
   @spec parse(String.t()) :: HTMLParser.html_tree()
