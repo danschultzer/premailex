@@ -1,8 +1,6 @@
 if Code.ensure_loaded?(Meeseeks) do
   defmodule Premailex.HTMLParser.Meeseeks do
-    @moduledoc """
-    API connection with Meeseeks
-    """
+    @moduledoc false
 
     require Logger
     import Meeseeks.CSS
