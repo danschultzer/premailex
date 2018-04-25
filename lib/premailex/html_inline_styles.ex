@@ -8,8 +8,10 @@ defmodule Premailex.HTMLInlineStyles do
   @doc """
   Processes an HTML string adding inline styles.
   """
-  @spec process(String.t(), String.t()) :: String.t()
-  def process(html, css_selector) do
+  @spec process(String.t(), Keyword.t()) :: String.t()
+  def process(html, options \\ []) do
+    css_selector = Keyword.get(options, :css_selector, "style,link[rel=\"stylesheet\"][href]")
+    
     tree = HTMLParser.parse(html)
 
     tree
