@@ -1,7 +1,5 @@
 defmodule Premailex.HTMLParser.Floki do
-  @moduledoc """
-  API connection with Floki
-  """
+  @moduledoc false
   alias Premailex.HTMLParser
 
   @doc false
@@ -30,6 +28,7 @@ defmodule Premailex.HTMLParser.Floki do
     Floki.raw_html(tree)
   end
 
+  @doc false
   @spec text(HTMLParser.html_tree()) :: String.t()
   def text(tree) do
     Floki.text(tree)

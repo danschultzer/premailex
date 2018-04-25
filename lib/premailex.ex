@@ -14,9 +14,9 @@ defmodule Premailex do
       "<html><head></head><body><p style=\\\"background-color:#fff;color:#000;\\\">Text</p></body></html>"
 
   """
-  @spec to_inline_css(String.t(), String.t()) :: String.t()
-  def to_inline_css(html, css_selector \\ "style,link[rel=\"stylesheet\"][href]") do
-    Premailex.HTMLInlineStyles.process(html, css_selector)
+  @spec to_inline_css(String.t(), Keyword.t()) :: String.t()
+  def to_inline_css(html, options \\ []) do
+    Premailex.HTMLInlineStyles.process(html, options)
   end
 
   @doc """
