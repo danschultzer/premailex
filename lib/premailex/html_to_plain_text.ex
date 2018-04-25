@@ -141,7 +141,6 @@ defmodule Premailex.HTMLToPlainText do
     |> Enum.join(" ")
   end
 
-  defp flatten_table_body([tree]), do: flatten_table_body(tree)
   defp flatten_table_body(list) when is_list(list), do: Enum.map(list, &flatten_table_body/1)
   defp flatten_table_body({"tbody", [], table_cells}), do: table_cells
   defp flatten_table_body(elem), do: elem
