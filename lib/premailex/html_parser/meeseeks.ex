@@ -1,3 +1,4 @@
+if Code.ensure_loaded?(Meeseeks) do
 defmodule Premailex.HTMLParser.Meeseeks do
   @moduledoc """
   API connection with Meeseeks
@@ -47,4 +48,5 @@ defmodule Premailex.HTMLParser.Meeseeks do
   def text(text) when is_binary(text), do: text
   def text(list) when is_list(list), do: Enum.map_join(list, "", &text/1)
   def text({_element, _attrs, children}), do: text(children)
+end
 end
