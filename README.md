@@ -38,6 +38,28 @@ Add inline styles based on styles defined in `<head>`:
 Premailex.to_inline_css(html)
 ```
 
+## Example with Swoosh
+
+```elixir
+def welcome(user) do
+  new()
+  |> to({user.name, user.email})
+  |> from({"Dr B Banner", "hulk.smash@example.com"})
+  |> subject("Hello, Avengers!")
+  |> render_body("welcome.html", %{username: user.username})
+  |> premail()
+end
+
+defp premail(email) do
+  html = Premailex.to_inline_css(email.html_body)
+  text = Premailex.to_text(email.html_body)
+
+  email
+  |> html_body(html)
+  |> text_body(text)
+end
+```
+
 ## Example with Bamboo
 
 ```elixir
