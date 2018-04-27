@@ -10,19 +10,22 @@ defmodule Premailex.HTMLInlineStyles do
 
   Options:
     * `css_selector` - the style tags to be processed for inline styling, defaults to `style,link[rel="stylesheet"][href]`
-    * `optimize` - boolean option for optimizing output, defaults to `false`
+    * `optimize` - list or atom option for optimizing the output. The following values can be used:
+      * `:none` - no optimization (default)
+      * `:all` - apply all optimization steps
+      * `:remove_style_tags` - Remove style tags (can be combined in a list)
   """
   @spec process(String.t(), Keyword.t()) :: String.t()
   def process(html, options \\ []) do
     css_selector = Keyword.get(options, :css_selector, "style,link[rel=\"stylesheet\"][href]")
-    optimize = Keyword.get(options, :optimize, false)
+    optimize_steps = Keyword.get(options, :optimize, :none)
     tree = HTMLParser.parse(html)
 
     tree
     |> load_styles(css_selector)
     |> apply_styles(tree)
     |> normalize_styles()
-    |> maybe_optimize(optimize, css_selector: css_selector)
+    |> optimize(optimize_steps, css_selector: css_selector)
     |> HTMLParser.to_string()
   end
 
@@ -117,11 +120,18 @@ defmodule Premailex.HTMLInlineStyles do
     {name, attrs, children}
   end
 
-  defp maybe_optimize(tree, true, options) do
-    remove_style_tags(tree, Keyword.get(options, :css_selector))
+  defp optimize(tree, steps, options) when is_atom(steps), do: optimize(tree, [steps], options)
+  defp optimize(tree, [:none], _options), do: tree
+  defp optimize(tree, [:all], options), do: optimize(tree, [:remove_style_tags], options)
+
+  defp optimize(tree, steps, options) do
+    maybe_remove_style_tags(tree, steps, options)
   end
 
-  defp maybe_optimize(tree, _optimize, _options), do: tree
-
-  defp remove_style_tags(tree, css_selectors), do: HTMLParser.filter(tree, css_selectors)
+  defp maybe_remove_style_tags(tree, steps, options) do
+    case Enum.member?(steps, :remove_style_tags) do
+      true -> HTMLParser.filter(tree, Keyword.get(options, :css_selector))
+      false -> tree
+    end
+  end
 end

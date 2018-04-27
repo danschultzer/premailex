@@ -112,10 +112,33 @@ defmodule Premailex.HTMLInlineStylesTest do
              "<p style=\"color:#333333;font-family:Arial, sans-serif;font-size:16px;font-weight:bold;line-height:22px;margin:0;padding:0;\">First paragraph"
   end
 
-  test "process/1 with optimize", %{input: input} do
-    parsed = Premailex.HTMLInlineStyles.process(input, optimize: true)
-
+  test "process/1 with optimize: :all", %{input: input} do
+    parsed = Premailex.HTMLInlineStyles.process(input, optimize: :all)
     refute parsed =~ "<style>"
     refute parsed =~ "<link href"
+  end
+
+  test "process/1 with optimize: :remove_style_tags", %{input: input} do
+    parsed = Premailex.HTMLInlineStyles.process(input, optimize: :remove_style_tags)
+    refute parsed =~ "<style>"
+    refute parsed =~ "<link href"
+  end
+
+  test "process/1 with optimize: [:remove_style_tags]", %{input: input} do
+    parsed = Premailex.HTMLInlineStyles.process(input, optimize: [:remove_style_tags])
+    refute parsed =~ "<style>"
+    refute parsed =~ "<link href"
+  end
+
+  test "process/1 with optimize: [:unknown]", %{input: input} do
+    parsed = Premailex.HTMLInlineStyles.process(input, optimize: [:unknown])
+    assert parsed =~ "<style>"
+    assert parsed =~ "<link href"
+  end
+
+  test "process/1 with optimize: [:none]", %{input: input} do
+    parsed = Premailex.HTMLInlineStyles.process(input, optimize: :none)
+    assert parsed =~ "<style>"
+    assert parsed =~ "<link href"
   end
 end
