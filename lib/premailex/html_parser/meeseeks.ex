@@ -34,14 +34,6 @@ if Code.ensure_loaded?(Meeseeks) do
       end
     end
 
-    @doc false
-    @spec to_string(HTMLParser.html_tree()) :: String.t()
-    def to_string(tree) do
-      tree
-      |> Meeseeks.parse()
-      |> Meeseeks.html()
-    end
-
     def delete_matching(tree, selector) do
       tree
       |> Meeseeks.all(css("#{selector}"))
