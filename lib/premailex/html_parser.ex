@@ -33,6 +33,19 @@ defmodule Premailex.HTMLParser do
   end
 
   @doc """
+  Filters elements matching the selector from the HTML tree.
+
+  ## Examples
+
+      iex> Premailex.HTMLParser.filter([{"html", [], [{"head", [], []}, {"body", [], [{"h1", [], ["Title"]}]}]}], "h1")
+      [{"html", [], [{"head", [], []}, {"body", [], []}]}]
+  """
+  @spec filter(html_tree, String.t()) :: [html_tree]
+  def filter(tree, selector) do
+    apply(parser(), :filter, [tree, selector])
+  end
+
+  @doc """
   Turns an HTML tree into a string.
 
   ## Examples

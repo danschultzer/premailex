@@ -17,6 +17,12 @@ defmodule Premailex.HTMLParser.Floki do
   end
 
   @doc false
+  @spec filter(HTMLParser.html_tree(), String.t()) :: [HTMLParser.html_tree()]
+  def filter(tree, selector) do
+    Floki.filter_out(tree, selector)
+  end
+
+  @doc false
   @spec to_string(HTMLParser.html_tree()) :: String.t()
   def to_string(tree) do
     Floki.raw_html(tree)

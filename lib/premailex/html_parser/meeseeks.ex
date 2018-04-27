@@ -6,6 +6,7 @@ if Code.ensure_loaded?(Meeseeks) do
     import Meeseeks.CSS
     alias Premailex.HTMLParser
     alias Meeseeks.Selector.CSS.Parser.ParseError
+    alias Meeseeks.Document
 
     @doc false
     @spec parse(String.t()) :: HTMLParser.html_tree()
@@ -46,5 +47,16 @@ if Code.ensure_loaded?(Meeseeks) do
     def text(text) when is_binary(text), do: text
     def text(list) when is_list(list), do: Enum.map_join(list, "", &text/1)
     def text({_element, _attrs, children}), do: text(children)
+
+    @doc false
+    @spec filter(HTMLParser.html_tree(), String.t()) :: [HTMLParser.html_tree()]
+    def filter(tree, selector) do
+      tree
+      |> Meeseeks.all(css("#{selector}"))
+      |> Enum.reduce(Meeseeks.parse(tree), fn e, acc ->
+        Document.delete_node(acc, e.id)
+      end)
+      |> Meeseeks.tree()
+    end
   end
 end

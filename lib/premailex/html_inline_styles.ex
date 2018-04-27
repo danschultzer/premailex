@@ -10,21 +10,35 @@ defmodule Premailex.HTMLInlineStyles do
 
   Options:
     * `css_selector` - the style tags to be processed for inline styling, defaults to `style,link[rel="stylesheet"][href]`
+    * `optimize` - list or atom option for optimizing the output. The following values can be used:
+      * `:none` - no optimization (default)
+      * `:all` - apply all optimization steps
+      * `:remove_style_tags` - Remove style tags (can be combined in a list)
   """
   @spec process(String.t(), Keyword.t()) :: String.t()
   def process(html, options \\ []) do
     css_selector = Keyword.get(options, :css_selector, "style,link[rel=\"stylesheet\"][href]")
-
+    optimize_steps = Keyword.get(options, :optimize, :none)
     tree = HTMLParser.parse(html)
 
+    tree
+    |> load_styles(css_selector)
+    |> apply_styles(tree)
+    |> normalize_styles()
+    |> optimize(optimize_steps, css_selector: css_selector)
+    |> HTMLParser.to_string()
+  end
+
+  defp load_styles(tree, css_selector) do
     tree
     |> HTMLParser.all(css_selector)
     |> Enum.map(&load_css(&1))
     |> Enum.filter(&(!is_nil(&1)))
     |> Enum.reduce([], &Enum.concat(&1, &2))
-    |> Enum.reduce(tree, &add_rule_set_to_html(&1, &2))
-    |> normalize_style()
-    |> HTMLParser.to_string()
+  end
+
+  defp apply_styles(styles, tree) do
+    Enum.reduce(styles, tree, &add_rule_set_to_html(&1, &2))
   end
 
   defp load_css({"style", _, content}) do
@@ -78,7 +92,7 @@ defmodule Premailex.HTMLInlineStyles do
     "#{style}[SPEC=#{specificity}[#{CSSParser.to_string(rules)}]]"
   end
 
-  defp normalize_style(html) do
+  defp normalize_styles(html) do
     html
     |> HTMLParser.all("[style]")
     |> Enum.reduce(html, &merge_styles(&2, &1))
@@ -104,5 +118,20 @@ defmodule Premailex.HTMLInlineStyles do
       |> Enum.concat([{"style", style}])
 
     {name, attrs, children}
+  end
+
+  defp optimize(tree, steps, options) when is_atom(steps), do: optimize(tree, [steps], options)
+  defp optimize(tree, [:none], _options), do: tree
+  defp optimize(tree, [:all], options), do: optimize(tree, [:remove_style_tags], options)
+
+  defp optimize(tree, steps, options) do
+    maybe_remove_style_tags(tree, steps, options)
+  end
+
+  defp maybe_remove_style_tags(tree, steps, options) do
+    case Enum.member?(steps, :remove_style_tags) do
+      true -> HTMLParser.filter(tree, Keyword.get(options, :css_selector))
+      false -> tree
+    end
   end
 end
