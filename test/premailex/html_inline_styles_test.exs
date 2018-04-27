@@ -63,14 +63,6 @@ defmodule Premailex.HTMLInlineStylesTest do
 
   setup do
     bypass = Bypass.open()
-    {:ok, bypass: bypass}
-  end
-
-  test "process/1", %{bypass: bypass} do
-    input =
-      @input
-      |> String.replace("STYLESHEET_URL", "http://localhost:#{bypass.port}/styles.css")
-      |> String.replace("INVALID_URL", "http://localhost:#{bypass.port}/invalid_styles.css")
 
     Bypass.expect_once(bypass, "GET", "/styles.css", fn conn ->
       Plug.Conn.resp(conn, 200, @css_link_content)
@@ -80,6 +72,15 @@ defmodule Premailex.HTMLInlineStylesTest do
       Plug.Conn.resp(conn, 500, "{}")
     end)
 
+    input =
+      @input
+      |> String.replace("STYLESHEET_URL", "http://localhost:#{bypass.port}/styles.css")
+      |> String.replace("INVALID_URL", "http://localhost:#{bypass.port}/invalid_styles.css")
+
+    {:ok, bypass: bypass, input: input}
+  end
+
+  test "process/1", %{input: input} do
     parsed = Premailex.HTMLInlineStyles.process(input)
 
     assert parsed =~
@@ -98,5 +99,23 @@ defmodule Premailex.HTMLInlineStylesTest do
     assert parsed =~ "<span>Test</span> <span>consecutive</span> <span>tags</span>"
 
     refute parsed =~ "[SPEC="
+
+    assert parsed =~ "<style>"
+    assert parsed =~ "<link href"
+  end
+
+  test "process/1 with css_selector", %{input: input} do
+    parsed =
+      Premailex.HTMLInlineStyles.process(input, css_selector: "link[rel=\"stylesheet\"][href]")
+
+    assert parsed =~
+             "<p style=\"color:#333333;font-family:Arial, sans-serif;font-size:16px;font-weight:bold;line-height:22px;margin:0;padding:0;\">First paragraph"
+  end
+
+  test "process/1 with optimize", %{input: input} do
+    parsed = Premailex.HTMLInlineStyles.process(input, optimize: true)
+
+    refute parsed =~ "<style>"
+    refute parsed =~ "<link href"
   end
 end

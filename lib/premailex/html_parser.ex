@@ -32,9 +32,17 @@ defmodule Premailex.HTMLParser do
     apply(parser(), :all, [tree, selector])
   end
 
-  @spec delete_matching(html_tree, String.t()) :: [html_tree]
-  def delete_matching(tree, selector) do
-    apply(parser(), :delete_matching, [tree, selector])
+  @doc """
+  Filters elements matching the selector from the HTML tree.
+
+  ## Examples
+
+      iex> Premailex.HTMLParser.filter([{"html", [], [{"head", [], []}, {"body", [], [{"h1", [], ["Title"]}]}]}], "h1")
+      [{"html", [], [{"head", [], []}, {"body", [], []}]}]
+  """
+  @spec filter(html_tree, String.t()) :: [html_tree]
+  def filter(tree, selector) do
+    apply(parser(), :filter, [tree, selector])
   end
 
   @doc """

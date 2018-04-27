@@ -10,22 +10,32 @@ defmodule Premailex.HTMLInlineStyles do
 
   Options:
     * `css_selector` - the style tags to be processed for inline styling, defaults to `style,link[rel="stylesheet"][href]`
+    * `optimize` - boolean option for optimizing output, defaults to `false`
   """
   @spec process(String.t(), Keyword.t()) :: String.t()
   def process(html, options \\ []) do
     css_selector = Keyword.get(options, :css_selector, "style,link[rel=\"stylesheet\"][href]")
-
+    optimize = Keyword.get(options, :optimize, false)
     tree = HTMLParser.parse(html)
 
+    tree
+    |> load_styles(css_selector)
+    |> apply_styles(tree)
+    |> normalize_styles()
+    |> maybe_optimize(optimize, css_selector: css_selector)
+    |> HTMLParser.to_string()
+  end
+
+  defp load_styles(tree, css_selector) do
     tree
     |> HTMLParser.all(css_selector)
     |> Enum.map(&load_css(&1))
     |> Enum.filter(&(!is_nil(&1)))
     |> Enum.reduce([], &Enum.concat(&1, &2))
-    |> Enum.reduce(tree, &add_rule_set_to_html(&1, &2))
-    |> normalize_style()
-    |> HTMLParser.delete_matching(css_selector)
-    |> HTMLParser.to_string()
+  end
+
+  defp apply_styles(styles, tree) do
+    Enum.reduce(styles, tree, &add_rule_set_to_html(&1, &2))
   end
 
   defp load_css({"style", _, content}) do
@@ -79,7 +89,7 @@ defmodule Premailex.HTMLInlineStyles do
     "#{style}[SPEC=#{specificity}[#{CSSParser.to_string(rules)}]]"
   end
 
-  defp normalize_style(html) do
+  defp normalize_styles(html) do
     html
     |> HTMLParser.all("[style]")
     |> Enum.reduce(html, &merge_styles(&2, &1))
@@ -106,4 +116,12 @@ defmodule Premailex.HTMLInlineStyles do
 
     {name, attrs, children}
   end
+
+  defp maybe_optimize(tree, true, options) do
+    remove_style_tags(tree, Keyword.get(options, :css_selector))
+  end
+
+  defp maybe_optimize(tree, _optimize, _options), do: tree
+
+  defp remove_style_tags(tree, css_selectors), do: HTMLParser.filter(tree, css_selectors)
 end

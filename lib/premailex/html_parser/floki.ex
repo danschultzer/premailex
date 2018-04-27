@@ -17,8 +17,8 @@ defmodule Premailex.HTMLParser.Floki do
   end
 
   @doc false
-  @spec delete_matching(HTMLParser.html_tree(), String.t()) :: [HTMLParser.html_tree()]
-  def delete_matching(tree, selector) do
+  @spec filter(HTMLParser.html_tree(), String.t()) :: [HTMLParser.html_tree()]
+  def filter(tree, selector) do
     Floki.filter_out(tree, selector)
   end
 

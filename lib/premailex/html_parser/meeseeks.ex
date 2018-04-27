@@ -48,7 +48,9 @@ if Code.ensure_loaded?(Meeseeks) do
     def text(list) when is_list(list), do: Enum.map_join(list, "", &text/1)
     def text({_element, _attrs, children}), do: text(children)
 
-    def delete_matching(tree, selector) do
+    @doc false
+    @spec filter(HTMLParser.html_tree(), String.t()) :: [HTMLParser.html_tree()]
+    def filter(tree, selector) do
       tree
       |> Meeseeks.all(css("#{selector}"))
       |> Enum.reduce(Meeseeks.parse(tree), fn e, acc ->
