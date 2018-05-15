@@ -5,7 +5,6 @@ if Code.ensure_loaded?(Meeseeks) do
     require Logger
     import Meeseeks.CSS
     alias Premailex.HTMLParser
-    alias Meeseeks.Selector.CSS.Parser.ParseError
     alias Meeseeks.Document
 
     @doc false
@@ -28,8 +27,8 @@ if Code.ensure_loaded?(Meeseeks) do
         |> Meeseeks.all(css("#{selector}"))
         |> Enum.map(&Meeseeks.tree/1)
       rescue
-        e in ParseError ->
-          Logger.warn("Meeseeks CSS ParseError: " <> e.message)
+        e in Meeseeks.Error ->
+          Logger.warn("Meeseeks Error: " <> inspect(e))
           []
       end
     end
