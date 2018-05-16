@@ -31,6 +31,7 @@ defmodule Premailex do
   @spec to_text(String.t()) :: String.t()
   def to_text(html) do
     html
+    |> HTMLParser.parse()
     |> HTMLParser.all("body")
     |> Premailex.HTMLToPlainText.process()
   end
