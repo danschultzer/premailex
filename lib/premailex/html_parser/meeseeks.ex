@@ -7,6 +7,10 @@ if Code.ensure_loaded?(Meeseeks) do
     alias Premailex.HTMLParser
     alias Meeseeks.Document
 
+    @meeseeks_error if Code.ensure_loaded?(Meeseeks.Selector.CSS.Parser.ParseError),
+                      do: Meeseeks.Selector.CSS.Parser.ParseError,
+                      else: Meeseeks.Error
+
     @doc false
     @spec parse(String.t()) :: HTMLParser.html_tree()
     def parse(html) do
@@ -27,7 +31,7 @@ if Code.ensure_loaded?(Meeseeks) do
         |> Meeseeks.all(css("#{selector}"))
         |> Enum.map(&Meeseeks.tree/1)
       rescue
-        e in Meeseeks.Error ->
+        e in @meeseeks_error ->
           Logger.warn("Meeseeks Error: " <> inspect(e))
           []
       end
