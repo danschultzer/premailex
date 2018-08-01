@@ -12,10 +12,12 @@ matrix:
       otp_release: 19.0
     - elixir: 1.6
       otp_release: 20.0
+    - elixir: 1.7
+      otp_release: 20.0
       env:
         - MIX_ENV=test
         - CHECK_FORMAT=true
-    - elixir: 1.6
+    - elixir: 1.7
       otp_release: 20.0
       env:
         - HTML_PARSER=meeseeks
