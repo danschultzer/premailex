@@ -3,7 +3,7 @@ defmodule Premailex.CSSParserTest do
   doctest Premailex.CSSParser
 
   @input """
-  body, table {/* text-decoration:underline */background-color:#ffffff;color:#000000;}
+  body, table {/* text-decoration:underline */background-color:#ffffff;background-image:url('http://example.com/image.png');color:#000000;}
   div p > a:hover {color:#000000 !important;text-decoration:underline}
   /*div {
     padding:10px
@@ -14,6 +14,7 @@ defmodule Premailex.CSSParserTest do
     %{
       rules: [
         %{directive: "background-color", value: "#ffffff", important?: false},
+        %{directive: "background-image", value: "url('http://example.com/image.png')", important?: false},
         %{directive: "color", value: "#000000", important?: false}
       ],
       selector: "body",
@@ -22,6 +23,7 @@ defmodule Premailex.CSSParserTest do
     %{
       rules: [
         %{directive: "background-color", value: "#ffffff", important?: false},
+        %{directive: "background-image", value: "url('http://example.com/image.png')", important?: false},
         %{directive: "color", value: "#000000", important?: false}
       ],
       selector: "table",

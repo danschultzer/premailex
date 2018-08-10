@@ -95,7 +95,8 @@ defmodule Premailex.CSSParser do
     rule
     |> String.trim()
     |> String.split(":")
-    |> parse_rule
+    |> prepare_rule_structure()
+    |> parse_rule()
   end
 
   defp parse_rule([directive, value]) do
@@ -109,7 +110,22 @@ defmodule Premailex.CSSParser do
   defp parse_rule([""]), do: nil
 
   defp parse_rule([value]) do
-    %{directive: "", value: String.trim(value), important?: String.contains?(value, "!important")}
+    %{
+      directive: "",
+      value: String.trim(value),
+      important?: String.contains?(value, "!important")
+    }
+  end
+
+  defp prepare_rule_structure(list) do
+    case length(list) do
+      1 -> list
+      _more ->
+        [head | tail] = list
+        value = Enum.join(tail, ":")
+
+        [head, value]
+    end
   end
 
   defp strip_comments(string) do
