@@ -95,7 +95,7 @@ defmodule Premailex.CSSParser do
     rule
     |> String.trim()
     |> String.split(":")
-    |> prepare_rule_structure()
+    |> prepare_rule_parameters()
     |> parse_rule()
   end
 
@@ -117,9 +117,11 @@ defmodule Premailex.CSSParser do
     }
   end
 
-  defp prepare_rule_structure(list) do
+  defp prepare_rule_parameters(list) do
     case length(list) do
-      1 -> list
+      1 ->
+        list
+
       _more ->
         [head | tail] = list
         value = Enum.join(tail, ":")

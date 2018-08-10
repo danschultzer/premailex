@@ -14,7 +14,11 @@ defmodule Premailex.CSSParserTest do
     %{
       rules: [
         %{directive: "background-color", value: "#ffffff", important?: false},
-        %{directive: "background-image", value: "url('http://example.com/image.png')", important?: false},
+        %{
+          directive: "background-image",
+          value: "url('http://example.com/image.png')",
+          important?: false
+        },
         %{directive: "color", value: "#000000", important?: false}
       ],
       selector: "body",
@@ -23,7 +27,11 @@ defmodule Premailex.CSSParserTest do
     %{
       rules: [
         %{directive: "background-color", value: "#ffffff", important?: false},
-        %{directive: "background-image", value: "url('http://example.com/image.png')", important?: false},
+        %{
+          directive: "background-image",
+          value: "url('http://example.com/image.png')",
+          important?: false
+        },
         %{directive: "color", value: "#000000", important?: false}
       ],
       selector: "table",
