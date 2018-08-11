@@ -94,8 +94,8 @@ defmodule Premailex.CSSParser do
   defp parse_rule(rule) when is_binary(rule) do
     rule
     |> String.trim()
-    |> String.split(":")
-    |> parse_rule
+    |> String.split(":", parts: 2)
+    |> parse_rule()
   end
 
   defp parse_rule([directive, value]) do
@@ -109,7 +109,11 @@ defmodule Premailex.CSSParser do
   defp parse_rule([""]), do: nil
 
   defp parse_rule([value]) do
-    %{directive: "", value: String.trim(value), important?: String.contains?(value, "!important")}
+    %{
+      directive: "",
+      value: String.trim(value),
+      important?: String.contains?(value, "!important")
+    }
   end
 
   defp strip_comments(string) do
