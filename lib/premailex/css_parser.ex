@@ -94,8 +94,7 @@ defmodule Premailex.CSSParser do
   defp parse_rule(rule) when is_binary(rule) do
     rule
     |> String.trim()
-    |> String.split(":")
-    |> prepare_rule_parameters()
+    |> String.split(":", parts: 2)
     |> parse_rule()
   end
 
@@ -115,19 +114,6 @@ defmodule Premailex.CSSParser do
       value: String.trim(value),
       important?: String.contains?(value, "!important")
     }
-  end
-
-  defp prepare_rule_parameters(list) do
-    case length(list) do
-      1 ->
-        list
-
-      _more ->
-        [head | tail] = list
-        value = Enum.join(tail, ":")
-
-        [head, value]
-    end
   end
 
   defp strip_comments(string) do
