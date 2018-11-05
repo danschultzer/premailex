@@ -41,7 +41,7 @@ defmodule Premailex.Mixfile do
       {:meeseeks, ">= 0.9.0 or < 0.11.0", optional: true},
       {:httpoison, "~> 0.13 or ~> 1.0"},
       {:credo, "~> 0.10", only: [:dev, :test], runtime: false},
-      {:bypass, "~> 0.8", only: :test},
+      {:bypass, github: "oo6/bypass", branch: "use-plug-cowboy", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end
