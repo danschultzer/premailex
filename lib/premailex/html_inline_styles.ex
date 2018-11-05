@@ -51,11 +51,11 @@ defmodule Premailex.HTMLInlineStyles do
 
   defp load_css({"link", {"href", url}}) do
     url
-    |> HTTPoison.get()
+    |> http_adapter().get()
     |> parse_url_response()
   end
 
-  defp parse_url_response({:ok, %{body: resp}}), do: CSSParser.parse(resp)
+  defp parse_url_response({:ok, %{body: resp}}) when is_binary(resp), do: CSSParser.parse(resp)
   defp parse_url_response(_), do: nil
 
   defp add_rule_set_to_html(%{selector: selector, rules: rules, specificity: specificity}, html) do
@@ -133,5 +133,11 @@ defmodule Premailex.HTMLInlineStyles do
       true -> HTMLParser.filter(tree, Keyword.get(options, :css_selector))
       false -> tree
     end
+  end
+
+  @default_http_adapter HTTPoison
+
+  defp http_adapter do
+    Application.get_env(:premailex, :http_adapter, @default_http_adapter)
   end
 end

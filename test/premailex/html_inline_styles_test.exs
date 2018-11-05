@@ -24,8 +24,8 @@ defmodule Premailex.HTMLInlineStylesTest do
   <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-      <link href="STYLESHEET_URL" media="all" rel="stylesheet">
-      <link href="INVALID_URL" media="all" rel="stylesheet">
+      <link href="http://localhost/styles.css" media="all" rel="stylesheet">
+      <link href="http://localhost/invalid_styles.css" media="all" rel="stylesheet">
       <link media="all" rel="stylesheet">
       <title>Test</title>
       <style>#{@css_inline_content}</style>
@@ -61,23 +61,21 @@ defmodule Premailex.HTMLInlineStylesTest do
   </html>
   """
 
+  module =
+    quote do
+      def get("http://localhost/styles.css"),
+        do: {:ok, %HTTPoison.Response{status_code: 200, body: unquote(@css_link_content)}}
+
+      def get("http://localhost/invalid_styles.css"),
+        do: {:ok, %HTTPoison.Response{status_code: 404}}
+    end
+
+  Module.create(HTTPAdapterMock, module, Macro.Env.location(__ENV__))
+
   setup do
-    bypass = Bypass.open()
+    Application.put_env(:premailex, :http_adapter, HTTPAdapterMock)
 
-    Bypass.expect_once(bypass, "GET", "/styles.css", fn conn ->
-      Plug.Conn.resp(conn, 200, @css_link_content)
-    end)
-
-    Bypass.expect_once(bypass, "GET", "/invalid_styles.css", fn conn ->
-      Plug.Conn.resp(conn, 500, "{}")
-    end)
-
-    input =
-      @input
-      |> String.replace("STYLESHEET_URL", "http://localhost:#{bypass.port}/styles.css")
-      |> String.replace("INVALID_URL", "http://localhost:#{bypass.port}/invalid_styles.css")
-
-    {:ok, bypass: bypass, input: input}
+    {:ok, input: @input}
   end
 
   test "process/1", %{input: input} do
