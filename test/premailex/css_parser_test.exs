@@ -8,6 +8,11 @@ defmodule Premailex.CSSParserTest do
   /*div {
     padding:10px
   }*/
+  @media screen and (max-width: 600px) {
+    body {
+      width: auto;
+    }
+  }
   """
 
   @parsed [
