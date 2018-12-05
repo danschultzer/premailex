@@ -51,7 +51,7 @@ defmodule Premailex.HTMLInlineStyles do
 
   defp load_css({"link", {"href", url}}) do
     url
-    |> http_adapter().get()
+    |> http_adapter().get([], [follow_redirect: true])
     |> parse_url_response()
   end
 
