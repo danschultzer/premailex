@@ -64,10 +64,10 @@ defmodule Premailex.HTMLInlineStylesTest do
   module =
     quote do
       def get("http://localhost/styles.css"),
-        do: {:ok, %HTTPoison.Response{status_code: 200, body: unquote(@css_link_content)}}
+        do: {:ok, unquote(@css_link_content)}
 
       def get("http://localhost/invalid_styles.css"),
-        do: {:ok, %HTTPoison.Response{status_code: 404}}
+        do: {:error, %HTTPoison.Response{status_code: 404}}
     end
 
   Module.create(HTTPAdapterMock, module, Macro.Env.location(__ENV__))

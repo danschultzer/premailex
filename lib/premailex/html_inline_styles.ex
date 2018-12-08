@@ -55,7 +55,7 @@ defmodule Premailex.HTMLInlineStyles do
     |> parse_url_response()
   end
 
-  defp parse_url_response({:ok, %{body: resp}}) when is_binary(resp), do: CSSParser.parse(resp)
+  defp parse_url_response({:ok, resp}) when is_binary(resp), do: CSSParser.parse(resp)
   defp parse_url_response(_), do: nil
 
   defp add_rule_set_to_html(%{selector: selector, rules: rules, specificity: specificity}, html) do
@@ -135,7 +135,7 @@ defmodule Premailex.HTMLInlineStyles do
     end
   end
 
-  @default_http_adapter HTTPoison
+  @default_http_adapter Premailex.HTTPoisonAdapter
 
   defp http_adapter do
     Application.get_env(:premailex, :http_adapter, @default_http_adapter)
