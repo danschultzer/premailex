@@ -2,7 +2,7 @@
 
 ## v0.3.4
 
-* HTTP adapter for HTTPoison that handles redirects #31 #32 (thanks @Lackoftactics)
+* HTTP adapter for HTTPoison that handles redirects #31 #32 (thanks Przemyslaw Mroczek @Lackoftactics)
 
 ## v0.3.3
 
