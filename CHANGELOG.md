@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.4
+
+* HTTP adapter for HTTPoison that handles redirects #31 #32 (thanks @Lackoftactics)
+
 ## v0.3.3
 
 * Ignore `@media` queries  #28 #29
