@@ -38,6 +38,10 @@ defmodule Premailex.HTMLToPlainTextTest do
 
   <table>
     <tr>
+      <th>Header key</th>
+      <th>Header value</th>
+    </tr>
+    <tr>
       <td>Key:</td>
       <td>Value</td>
     </tr>
@@ -105,9 +109,9 @@ defmodule Premailex.HTMLToPlainTextTest do
   Paranthesis test
   (http://www.example.com/this-is-a-very-long-uri-to-verify-that-wordwrap-breaks-will-not-break-this-url)
 
+  Header key Header value
   Key: Value
-  Key 2:
-  Nested key: Value
+  Key 2: Nested key: Value
   """
 
   test "process/1" do

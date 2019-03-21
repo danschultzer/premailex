@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.5 (TBA)
+
+* Accept `<table>` with `<th>` elements.
+
 ## v0.3.4
 
 * HTTP adapter for HTTPoison that handles redirects #31 #32 (thanks Przemyslaw Mroczek @Lackoftactics)

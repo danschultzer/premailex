@@ -132,13 +132,21 @@ defmodule Premailex.HTMLToPlainText do
     |> tables()
     |> flatten_table_body()
     |> Util.traverse("tr", &table_rows(&1))
-    |> Enum.join("\n")
+    |> Enum.join("")
+  end
+
+  defp table_rows({_, _, [{"th", _, _} | _rest] = table_cells}) do
+    table_cells
+    |> Util.traverse("th", &HTMLParser.text(&1))
+    |> Enum.join(" ")
+    |> Kernel.<>("\n")
   end
 
   defp table_rows({_, _, table_cells}) do
     table_cells
     |> Util.traverse("td", &HTMLParser.text(&1))
     |> Enum.join(" ")
+    |> Kernel.<>("\n")
   end
 
   defp flatten_table_body(elements), do: Enum.flat_map(elements, &remove_tbody/1)
