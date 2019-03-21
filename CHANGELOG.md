@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.5 (TBA)
+## v0.3.5 (2019-03-21)
 
 * Accept `<table>` with `<th>` elements.
 
