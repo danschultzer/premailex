@@ -1,28 +1,29 @@
 language: elixir
-script:
-  - mix deps.compile
-  - mix test
-  - mix credo
-  - if [ $CHECK_FORMAT ]; then mix format mix.exs "lib/**/*.{ex,exs}" "test/**/*.{ex,exs}" --check-formatted; fi
-env:
-  - MIX_ENV=test
-matrix:
+elixir: 1.8
+otp_release: 21.0
+before_script:
+  - curl https://sh.rustup.rs | sh -s -- -y
+  - export PATH=$HOME/.cargo/bin:$PATH
+jobs:
   include:
-    - elixir: 1.5
+    - stage: test
+      elixir: 1.5
       otp_release: 19.0
-    - elixir: 1.6
+      script: &test_scripts
+        - source $HOME/.cargo/env
+        - mix test
+        - MIX_ENV=test mix credo
+        - if [ $CHECK_FORMAT ]; then mix format mix.exs "lib/**/*.{ex,exs}" "test/**/*.{ex,exs}" --check-formatted; fi
+    - stage: test
+      elixir: 1.6
       otp_release: 20.0
-    - elixir: 1.7
-      otp_release: 20.0
+      script: *test_scripts
+    - stage: test
+      elixir: 1.7
+      script: *test_scripts
+    - stage: test
       env:
-        - MIX_ENV=test
         - CHECK_FORMAT=true
-    - elixir: 1.7
-      otp_release: 20.0
+    - stage: test
       env:
         - HTML_PARSER=meeseeks
-
-# Required for meeseeks
-before_install:
-  - curl https://sh.rustup.rs | sh -s -- -y
-  - export PATH="$HOME/.cargo/bin:$PATH"
