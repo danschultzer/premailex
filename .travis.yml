@@ -7,17 +7,13 @@ before_script:
 jobs:
   include:
     - stage: test
-      elixir: 1.5
-      otp_release: 19.0
+      elixir: 1.6
+      otp_release: 20.0
       script: &test_scripts
         - source $HOME/.cargo/env
         - mix test
         - MIX_ENV=test mix credo
         - if [ $CHECK_FORMAT ]; then mix format mix.exs "lib/**/*.{ex,exs}" "test/**/*.{ex,exs}" --check-formatted; fi
-    - stage: test
-      elixir: 1.6
-      otp_release: 20.0
-      script: *test_scripts
     - stage: test
       elixir: 1.7
       script: *test_scripts
