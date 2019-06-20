@@ -45,6 +45,7 @@ if Code.ensure_loaded?(Meeseeks) do
     @spec text(HTMLParser.html_tree()) :: String.t()
     def text(text) when is_binary(text), do: text
     def text(list) when is_list(list), do: Enum.map_join(list, "", &text/1)
+    def text({:comment, _text}), do: ""
     def text({_element, _attrs, children}), do: text(children)
 
     @doc false
