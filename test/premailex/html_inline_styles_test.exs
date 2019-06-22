@@ -57,6 +57,13 @@ defmodule Premailex.HTMLInlineStylesTest do
           </table>
         </td>
       </tr>
+    </table>
+
+    <!-- This is a comment -->
+
+    <!--[if (gte mso 9)|(IE)]>
+    <hr/>
+    <![endif]-->
     </body>
   </html>
   """
@@ -100,6 +107,12 @@ defmodule Premailex.HTMLInlineStylesTest do
 
     assert parsed =~ "<style>"
     assert parsed =~ "<link href"
+
+    refute parsed =~ "This is a comment"
+
+    assert parsed =~ ~r/(#{Regex.escape("<!--[if (gte mso 9)|(IE)]>")})|(#{Regex.escape("<!-- [if (gte mso 9)|(IE)]>")})/
+    assert parsed =~ "<hr/>"
+    assert parsed =~ ~r/(#{Regex.escape("<![endif]-->")})|(#{Regex.escape("<![endif] -->")})/
   end
 
   test "process/1 with css_selector", %{input: input} do

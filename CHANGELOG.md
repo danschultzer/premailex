@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.6 (TBA)
+
+* Preserve conditional comments in `Premailex.Util.traverse/3` so they can show up in output from `Premailex.HTMLInlineStyles.process/2`
+
 ## v0.3.5 (2019-03-21)
 
 * Accept `<table>` with `<th>` elements.

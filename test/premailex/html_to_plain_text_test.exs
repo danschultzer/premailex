@@ -59,6 +59,10 @@ defmodule Premailex.HTMLToPlainTextTest do
     </tr>
   </table>
 
+  <!--[if (gte mso 9)|(IE)]>
+  <hr/>
+  <![endif]-->
+
   <!-- This is a comment -->
   """
 
