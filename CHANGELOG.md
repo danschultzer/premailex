@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.6 (TBA)
+## v0.3.6 (2019-06-22)
 
 * Preserve conditional comments in `Premailex.Util.traverse/3` so they can show up in output from `Premailex.HTMLInlineStyles.process/2`
 
