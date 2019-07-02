@@ -60,8 +60,12 @@ defmodule Premailex.HTMLToPlainTextTest do
   </table>
 
   <!--[if (gte mso 9)|(IE)]>
-  <hr/>
+  <p>Downlevel-hidden comment</p>
   <![endif]-->
+
+  <!--[if !mso]><!-- -->
+  <p>Downlevel-revealed comment</p>
+  <!--<![endif]-->
 
   <!-- This is a comment -->
   """
@@ -116,6 +120,8 @@ defmodule Premailex.HTMLToPlainTextTest do
   Header key Header value
   Key: Value
   Key 2: Nested key: Value
+
+  Downlevel-revealed comment
   """
 
   test "process/1" do

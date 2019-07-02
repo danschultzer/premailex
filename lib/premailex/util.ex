@@ -45,6 +45,7 @@ defmodule Premailex.Util do
   end
 
   def traverse({:comment, "[if " <> _rest} = comment, _, _), do: comment
+  def traverse({:comment, "<![endif]" <> _rest} = comment, _, _), do: comment
   def traverse({:comment, _}, _, _), do: ""
   def traverse(element, _, _), do: element
 
