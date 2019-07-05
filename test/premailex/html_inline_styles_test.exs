@@ -62,8 +62,12 @@ defmodule Premailex.HTMLInlineStylesTest do
     <!-- This is a comment -->
 
     <!--[if (gte mso 9)|(IE)]>
-    <hr/>
+    <p>Downlevel-hidden comment</p>
     <![endif]-->
+
+    <!--[if !mso]><!-- -->
+    <p>Downlevel-revealed comment</p>
+    <!--<![endif]-->
     </body>
   </html>
   """
@@ -111,8 +115,13 @@ defmodule Premailex.HTMLInlineStylesTest do
     refute parsed =~ "This is a comment"
 
     assert parsed =~ ~r/(#{Regex.escape("<!--[if (gte mso 9)|(IE)]>")})|(#{Regex.escape("<!-- [if (gte mso 9)|(IE)]>")})/
-    assert parsed =~ "<hr/>"
+    assert parsed =~ "<p>Downlevel-hidden comment</p>"
     assert parsed =~ ~r/(#{Regex.escape("<![endif]-->")})|(#{Regex.escape("<![endif] -->")})/
+
+    assert parsed =~ ~r/(#{Regex.escape("<!--[if !mso]><!-- -->")})|(#{Regex.escape("<!-- [if !mso]><!--  -->")})/
+    assert parsed =~
+            "<p style=\"background-color:#000;color:#000 !important;font-family:Arial, sans-serif;font-size:16px;font-weight:bold;line-height:22px;margin:0;padding:0;\">Downlevel-revealed comment</p>"
+    assert parsed =~ ~r/(#{Regex.escape("<!--<![endif]-->")})|(#{Regex.escape("<!-- <![endif] -->")})/
   end
 
   test "process/1 with css_selector", %{input: input} do
