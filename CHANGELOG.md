@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.7 (TBA)
+## v0.3.7 (2019-07-05)
 
 * Preserve downlevel-revealed conditional comments in `Premailex.Util.traverse/3`
 
