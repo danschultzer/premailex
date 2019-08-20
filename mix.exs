@@ -23,7 +23,9 @@ defmodule Premailex.Mixfile do
         canonical: "http://hexdocs.pm/premailex",
         source_url: "https://github.com/danschultzer/premailex",
         extras: ["README.md"]
-      ]
+      ],
+
+      xref: [exclude: [Meeseeks, Meeseeks.Document, Meeseeks.Selector.CSS, :certifi, :ssl_verify_hostname]]
     ]
   end
 
