@@ -1,5 +1,5 @@
 language: elixir
-elixir: 1.8
+elixir: 1.9
 otp_release: 21.0
 before_script:
   - curl https://sh.rustup.rs | sh -s -- -y
@@ -13,13 +13,11 @@ jobs:
         - source $HOME/.cargo/env
         - mix test
         - MIX_ENV=test mix credo
-        - if [ $CHECK_FORMAT ]; then mix format mix.exs "lib/**/*.{ex,exs}" "test/**/*.{ex,exs}" --check-formatted; fi
     - stage: test
-      elixir: 1.7
       script: *test_scripts
-    - stage: test
-      env:
-        - CHECK_FORMAT=true
-    - stage: test
       env:
         - HTML_PARSER=meeseeks
+    - stage: test
+      script: *test_scripts
+      after_script:
+        - mix format mix.exs "lib/**/*.{ex,exs}" "test/**/*.{ex,exs}" --check-formatted
