@@ -4,6 +4,7 @@
 
 * Removed HTTPoison and use `:httpc` instead
 * Fixed bug where HTML with no style tags resulted in all existing inline styles being removed
+* Added `is_binary/1` guard to `Premailex.to_inline_css/2` and `Premailex.to_text/1`
 
 ## v0.3.7 (2019-07-05)
 
