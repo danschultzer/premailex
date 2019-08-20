@@ -163,4 +163,9 @@ defmodule Premailex.HTMLInlineStylesTest do
     assert parsed =~ "<style>"
     assert parsed =~ "<link href"
   end
+
+  test "process/1 with no loaded styles" do
+    parsed = Premailex.HTMLInlineStyles.process("<span style=\"width: 100%;\">Hello</span>")
+    assert parsed =~ "<span style=\"width: 100%;\">Hello</span>"
+  end
 end

@@ -107,14 +107,23 @@ defmodule Premailex.HTMLInlineStyles do
   end
 
   defp merge_style({name, attrs, children}) do
+    current_style =
+      attrs
+      |> Enum.into(%{})
+      |> Map.get("style")
+
     style =
       ~r/\[SPEC\=([\d]+)\[(.[^\]\]]*)\]\]/
-      |> Regex.scan(attrs |> Enum.into(%{}) |> Map.get("style"))
+      |> Regex.scan(current_style)
       |> Enum.map(fn [_, specificity, rule] ->
         %{specificity: specificity, rules: CSSParser.parse_rules(rule)}
       end)
       |> CSSParser.merge()
       |> CSSParser.to_string()
+      |> case do
+        ""    -> current_style
+        style -> style
+      end
 
     attrs =
       attrs
