@@ -39,7 +39,8 @@ defmodule Premailex.Mixfile do
     [
       {:floki, ">= 0.19.0 or < 0.21.0"},
       {:meeseeks, ">= 0.9.0 or < 0.11.0", optional: true},
-      {:httpoison, "~> 0.13 or ~> 1.0"},
+      {:certifi, ">= 0.0.0", optional: true},
+      {:ssl_verify_fun, ">= 0.0.0", optional: true},
       {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false},
       {:ex_doc, ">= 0.0.0", only: :dev}
     ]

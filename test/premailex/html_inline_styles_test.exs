@@ -2,6 +2,8 @@ defmodule Premailex.HTMLInlineStylesTest do
   use ExUnit.Case
   doctest Premailex.HTMLInlineStyles
 
+  alias Premailex.HTTPAdapter.HTTPResponse
+
   @css_link_content """
   body,table,p,td,ul,ol {color:#333333; font-family:Arial, sans-serif; font-size:14px; line-height:22px;}
 
@@ -74,11 +76,11 @@ defmodule Premailex.HTMLInlineStylesTest do
 
   module =
     quote do
-      def get("http://localhost/styles.css"),
-        do: {:ok, unquote(@css_link_content)}
+      def request(:get, "http://localhost/styles.css", _body, _headers, _opts),
+        do: {:ok, %HTTPResponse{status: 200, body: unquote(@css_link_content)}}
 
-      def get("http://localhost/invalid_styles.css"),
-        do: {:error, %HTTPoison.Response{status_code: 404}}
+      def request(:get, "http://localhost/invalid_styles.css", _body, _headers, _opts),
+        do: {:ok, %HTTPResponse{status: 404}}
     end
 
   Module.create(HTTPAdapterMock, module, Macro.Env.location(__ENV__))

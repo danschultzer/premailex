@@ -50,13 +50,17 @@ defmodule Premailex.HTMLInlineStyles do
   defp load_css({"link", attrs, _}), do: load_css({"link", List.keyfind(attrs, "href", 0)})
 
   defp load_css({"link", {"href", url}}) do
-    url
-    |> http_adapter().get()
-    |> parse_url_response()
+    {http_adapter, opts} = http_adapter()
+
+    :get
+    |> http_adapter.request(url, nil, nil, opts)
+    |> parse_body()
   end
 
-  defp parse_url_response({:ok, resp}) when is_binary(resp), do: CSSParser.parse(resp)
-  defp parse_url_response(_), do: nil
+  defp parse_body({:ok, %{status: status, body: body}}) when status in 200..399 do
+    CSSParser.parse(body)
+  end
+  defp parse_body(_any), do: nil
 
   defp add_rule_set_to_html(%{selector: selector, rules: rules, specificity: specificity}, html) do
     html
@@ -135,9 +139,10 @@ defmodule Premailex.HTMLInlineStyles do
     end
   end
 
-  @default_http_adapter Premailex.HTTPoisonAdapter
-
   defp http_adapter do
-    Application.get_env(:premailex, :http_adapter, @default_http_adapter)
+    case Application.get_env(:premailex, :http_adapter, Premailex.HTTPAdapter.Httpc) do
+      {adapter, opts} -> {adapter, opts}
+      adapter         -> {adapter, nil}
+    end
   end
 end
