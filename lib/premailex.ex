@@ -15,7 +15,7 @@ defmodule Premailex do
 
   """
   @spec to_inline_css(String.t(), Keyword.t()) :: String.t()
-  def to_inline_css(html, options \\ []) do
+  def to_inline_css(html, options \\ []) when is_binary(html) do
     Premailex.HTMLInlineStyles.process(html, options)
   end
 
@@ -29,7 +29,7 @@ defmodule Premailex do
 
   """
   @spec to_text(String.t()) :: String.t()
-  def to_text(html) do
+  def to_text(html) when is_binary(html) do
     html
     |> HTMLParser.parse()
     |> HTMLParser.all("body")
