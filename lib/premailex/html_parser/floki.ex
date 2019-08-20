@@ -2,37 +2,31 @@ defmodule Premailex.HTMLParser.Floki do
   @moduledoc false
   alias Premailex.HTMLParser
 
+  @behaviour HTMLParser
+
+  @impl true
   @doc false
-  @spec parse(String.t()) :: HTMLParser.html_tree()
   def parse(html) do
     html
     |> retain_inline_whitespace()
     |> Floki.parse()
   end
 
+  @impl true
   @doc false
-  @spec all(HTMLParser.html_tree(), String.t()) :: [HTMLParser.html_tree()]
-  def all(tree, selector) do
-    Floki.find(tree, selector)
-  end
+  def all(tree, selector), do: Floki.find(tree, selector)
 
+  @impl true
   @doc false
-  @spec filter(HTMLParser.html_tree(), String.t()) :: [HTMLParser.html_tree()]
-  def filter(tree, selector) do
-    Floki.filter_out(tree, selector)
-  end
+  def filter(tree, selector), do: Floki.filter_out(tree, selector)
 
+  @impl true
   @doc false
-  @spec to_string(HTMLParser.html_tree()) :: String.t()
-  def to_string(tree) do
-    Floki.raw_html(tree)
-  end
+  def to_string(tree), do: Floki.raw_html(tree)
 
+  @impl true
   @doc false
-  @spec text(HTMLParser.html_tree()) :: String.t()
-  def text(tree) do
-    Floki.text(tree)
-  end
+  def text(tree), do: Floki.text(tree)
 
   # """
   # This is a tempory fix until mochweb (or floki) has been updated
