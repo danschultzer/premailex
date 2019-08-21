@@ -53,7 +53,7 @@ defmodule Premailex.HTMLInlineStyles do
     {http_adapter, opts} = http_adapter()
 
     :get
-    |> http_adapter.request(url, nil, nil, opts)
+    |> http_adapter.request(url, nil, [], opts)
     |> parse_body()
   end
 
