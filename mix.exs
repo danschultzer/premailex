@@ -1,7 +1,7 @@
 defmodule Premailex.Mixfile do
   use Mix.Project
 
-  @version "0.3.7"
+  @version "0.3.8"
 
   def project do
     [
@@ -17,13 +17,7 @@ defmodule Premailex.Mixfile do
 
       # Docs
       name: "Premailex",
-      docs: [
-        source_ref: "v#{@version}",
-        main: "Premailex",
-        canonical: "http://hexdocs.pm/premailex",
-        source_url: "https://github.com/danschultzer/premailex",
-        extras: ["README.md"]
-      ],
+      docs: docs(),
 
       xref: [exclude: [Meeseeks, Meeseeks.Document, Meeseeks.Selector.CSS, :certifi, :ssl_verify_hostname]]
     ]
@@ -54,6 +48,19 @@ defmodule Premailex.Mixfile do
       licenses: ["MIT"],
       links: %{github: "https://github.com/danschultzer/premailex"},
       files: ~w(lib LICENSE mix.exs README.md)
+    ]
+  end
+
+  defp docs do
+    [
+      source_ref: "v#{@version}",
+      main: "README",
+      canonical: "http://hexdocs.pm/premailex",
+      source_url: "https://github.com/danschultzer/premailex",
+      extras: [
+        "README.md",
+        "CHANGELOG.md"
+      ]
     ]
   end
 end

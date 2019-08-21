@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.8 (TBA)
+## v0.3.8 (2019-08-22)
 
 * Removed HTTPoison and use `:httpc` instead
 * Fixed bug where HTML with no style tags resulted in all existing inline styles being removed
