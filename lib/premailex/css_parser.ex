@@ -36,8 +36,8 @@ defmodule Premailex.CSSParser do
     )
   )/ix
   @comments ~r/\/\*[\s\S]*?\*\//m
-  @media_queries ~r/@media[^{]+\{([\s\S]+?})\s*}/mi
-  @font_face ~r/(@font-face\s*{.*?})/si
+  @media_queries ~r/@media[^{]+{([\s\S]+?})\s*}/mi
+  @font_face ~r/@font-face\s*{[\s\S]+?}/mi
 
   @doc """
   Parses a CSS string into a map.
