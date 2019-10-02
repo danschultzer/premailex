@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.9 (2019-08-22)
+
+* Ignore `@font-face` at-rule
+
 ## v0.3.8 (2019-08-22)
 
 * Removed HTTPoison and use `:httpc` instead

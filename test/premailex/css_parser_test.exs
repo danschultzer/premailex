@@ -13,6 +13,11 @@ defmodule Premailex.CSSParserTest do
       width: auto;
     }
   }
+  @font-face {
+    font-family: "Open Sans";
+    src: url("/fonts/OpenSans-Regular-webfont.woff2") format("woff2"),
+         url("/fonts/OpenSans-Regular-webfont.woff") format("woff");
+  }
   """
 
   @parsed [
