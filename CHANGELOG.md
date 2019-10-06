@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.9 (2019-08-22)
+## v0.3.9 (2019-10-06)
 
 * Ignore `@font-face` at-rule
 
