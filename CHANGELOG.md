@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.10 (TBA)
+
+* Support floki up to `v0.24.x`
+
 ## v0.3.9 (2019-10-06)
 
 * Ignore `@font-face` at-rule
