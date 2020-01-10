@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.10 (TBA)
+## v0.3.10 (2020-01-09)
 
 * Support floki up to `v0.24.x`
 
