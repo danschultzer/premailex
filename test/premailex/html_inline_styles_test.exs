@@ -19,6 +19,7 @@ defmodule Premailex.HTMLInlineStylesTest do
   a:hover	{text-decoration: underline;}
 
   p.duplicate {color: blue;}
+  .same-match {color:yellow;}
   """
 
   @input """
@@ -70,6 +71,22 @@ defmodule Premailex.HTMLInlineStylesTest do
     <!--[if !mso]><!-- -->
     <p>Downlevel-revealed comment</p>
     <!--<![endif]-->
+
+    <div class="match-order-test-1 same-match">
+      <span class="same-match">1</span>
+    </div>
+    <div class="match-order-test-2 same-match">
+      <span class="same-match">1</span>
+    </div>
+    <div class="match-order-test-3 same-match">
+      <span class="same-match">1</span>
+      <span class="same-match">2</span>
+    </div>
+    <div class="encapsulated">
+      <div class="match-order-test-4 same-match">
+        <span class="same-match">1</span>
+      </div>
+    </div>
     </body>
   </html>
   """
@@ -124,6 +141,11 @@ defmodule Premailex.HTMLInlineStylesTest do
     assert parsed =~
             "<p style=\"background-color:#000;color:#000 !important;font-family:Arial, sans-serif;font-size:16px;font-weight:bold;line-height:22px;margin:0;padding:0;\">Downlevel-revealed comment</p>"
     assert parsed =~ ~r/(#{Regex.escape("<!--<![endif]-->")})|(#{Regex.escape("<!-- <![endif] -->")})/
+
+    assert parsed =~ "<div class=\"match-order-test-1 same-match\" style=\"color:yellow;\">"
+    assert parsed =~ "<div class=\"match-order-test-2 same-match\" style=\"color:yellow;\">"
+    assert parsed =~ "<div class=\"match-order-test-3 same-match\" style=\"color:yellow;\">"
+    assert parsed =~ "<div class=\"match-order-test-4 same-match\" style=\"color:yellow;\">"
   end
 
   test "process/1 with css_selector", %{input: input} do
