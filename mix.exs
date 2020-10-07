@@ -1,7 +1,7 @@
 defmodule Premailex.Mixfile do
   use Mix.Project
 
-  @version "0.3.10"
+  @version "0.3.11"
 
   def project do
     [

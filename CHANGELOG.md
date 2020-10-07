@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.11 (TBA)
+## v0.3.11 (2020-10-08)
 
 * Fixed bug where the inline styles where applied to more than the first match causing in some cases styles to be missing for subsequent parent elements
 * Relax floki requirement
