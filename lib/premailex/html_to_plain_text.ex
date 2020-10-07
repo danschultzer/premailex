@@ -9,7 +9,7 @@ defmodule Premailex.HTMLToPlainText do
 
   ## Examples
 
-      iex> Premailex.HTMLToPlainText.process("<ul><li>Test</li></ul>")
+      iex> Premailex.HTMLToPlainText.process("<html><body><ul><li>Test</li></ul></body></html>")
       "* Test"
 
   """
