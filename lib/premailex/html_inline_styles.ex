@@ -69,7 +69,7 @@ defmodule Premailex.HTMLInlineStyles do
   end
 
   defp update_style_for_html(html, needle, rules, specificity) do
-    Util.traverse(html, needle, &update_style_for_element(&1, rules, specificity))
+    Util.traverse_until_first(html, needle, &update_style_for_element(&1, rules, specificity))
   end
 
   defp update_style_for_element({name, attrs, children}, rules, specificity) do
