@@ -33,8 +33,8 @@ defmodule Premailex.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:floki, ">= 0.19.0 or < 0.30.0"},
-      {:meeseeks, ">= 0.11.1 or < 0.16.0", optional: true},
+      {:floki, "~> 0.19"},
+      {:meeseeks, "~> 0.11", optional: true},
       {:certifi, ">= 0.0.0", optional: true},
       {:ssl_verify_fun, ">= 0.0.0", optional: true},
       {:credo, "~> 1.4.0", only: [:dev, :test], runtime: false},
