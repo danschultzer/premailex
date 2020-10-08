@@ -27,6 +27,7 @@ defmodule Premailex.HTMLParser.Meeseeks do
       selector = CSS.compile_selectors(selector)
 
       tree
+      |> Meeseeks.parse(:tuple_tree)
       |> Meeseeks.all(selector)
       |> Enum.map(&Meeseeks.tree/1)
     rescue
@@ -40,7 +41,7 @@ defmodule Premailex.HTMLParser.Meeseeks do
   @doc false
   def to_string(tree) do
     tree
-    |> Meeseeks.parse()
+    |> Meeseeks.parse(:tuple_tree)
     |> Meeseeks.html()
   end
 
@@ -55,10 +56,11 @@ defmodule Premailex.HTMLParser.Meeseeks do
   @doc false
   def filter(tree, selector) do
     selector = CSS.compile_selectors(selector)
+    tree     = Meeseeks.parse(tree, :tuple_tree)
 
     tree
     |> Meeseeks.all(selector)
-    |> Enum.reduce(Meeseeks.parse(tree), fn e, acc ->
+    |> Enum.reduce(tree, fn e, acc ->
       Document.delete_node(acc, e.id)
     end)
     |> Meeseeks.tree()

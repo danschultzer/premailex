@@ -34,7 +34,7 @@ defmodule Premailex.Mixfile do
   defp deps do
     [
       {:floki, ">= 0.19.0 or < 0.30.0"},
-      {:meeseeks, ">= 0.9.0 or < 0.11.0", optional: true},
+      {:meeseeks, ">= 0.11.1 or < 0.16.0", optional: true},
       {:certifi, ">= 0.0.0", optional: true},
       {:ssl_verify_fun, ">= 0.0.0", optional: true},
       {:credo, "~> 1.4.0", only: [:dev, :test], runtime: false},
