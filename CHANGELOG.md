@@ -1,8 +1,10 @@
 # Changelog
 
-## v0.3.10 (TBA)
+## v0.3.11 (TBA)
 
 * Fixed bug where the inline styles where applied to more than the first match causing in some cases styles to be missing for subsequent parent elements
+* Relax floki requirement
+* Relax meeseeks requirement
 
 ## v0.3.10 (2020-01-09)
 
