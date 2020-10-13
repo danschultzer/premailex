@@ -19,7 +19,7 @@ defmodule Premailex.Mixfile do
       name: "Premailex",
       docs: docs(),
 
-      xref: [exclude: [Meeseeks, Meeseeks.Document, Meeseeks.Selector.CSS, :certifi, :ssl_verify_hostname]]
+      xref: [exclude: [:certifi, :httpc, Meeseeks, Meeseeks.Document, Meeseeks.Selector.CSS, :ssl_verify_hostname]]
     ]
   end
 
