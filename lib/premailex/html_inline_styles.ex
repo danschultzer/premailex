@@ -31,7 +31,7 @@ defmodule Premailex.HTMLInlineStyles do
   def process(html_tree, nil, options) do
     css_selector  = Keyword.get(options, :css_selector, "style,link[rel=\"stylesheet\"][href]")
     css_rule_sets = load_styles(html_tree, css_selector)
-    options       = Keyword.put(options, :css_selector, css_selector)
+    options       = Keyword.put_new(options, :css_selector, css_selector)
 
     process(html_tree, css_rule_sets, options)
   end
