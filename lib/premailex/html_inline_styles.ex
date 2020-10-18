@@ -9,23 +9,40 @@ defmodule Premailex.HTMLInlineStyles do
   Processes an HTML string adding inline styles.
 
   Options:
-    * `css_selector` - the style tags to be processed for inline styling, defaults to `style,link[rel="stylesheet"][href]`
-    * `optimize` - list or atom option for optimizing the output. The following values can be used:
+    * `:css_selector` - the style tags to be processed for inline styling, defaults to `style,link[rel="stylesheet"][href]`
+    * `:optimize` - list or atom option for optimizing the output. The following values can be used:
       * `:none` - no optimization (default)
       * `:all` - apply all optimization steps
       * `:remove_style_tags` - Remove style tags (can be combined in a list)
   """
-  @spec process(String.t(), Keyword.t()) :: String.t()
-  def process(html, options \\ []) do
-    css_selector = Keyword.get(options, :css_selector, "style,link[rel=\"stylesheet\"][href]")
-    optimize_steps = Keyword.get(options, :optimize, :none)
-    tree = HTMLParser.parse(html)
+  @spec process(String.t() | HTMLParser.html_tree(), [CSSParser.rule_set()], Keyword.t()) :: String.t()
+  def process(html_or_html_tree, css_rule_sets_or_options \\ nil, options \\ nil)
+  def process(html, css_rule_sets_or_options, options) when is_binary(html) do
+    html
+    |> HTMLParser.parse()
+    |> process(css_rule_sets_or_options, options)
+  end
+  def process(html_tree, css_rule_sets_or_options, nil) do
+    case Keyword.keyword?(css_rule_sets_or_options) do
+      true  -> process(html_tree, nil, css_rule_sets_or_options)
+      false -> process(html_tree, css_rule_sets_or_options, [])
+    end
+  end
+  def process(html_tree, nil, options) do
+    css_selector  = Keyword.get(options, :css_selector, "style,link[rel=\"stylesheet\"][href]")
+    css_rule_sets = load_styles(html_tree, css_selector)
+    options       = Keyword.put_new(options, :css_selector, css_selector)
 
-    tree
-    |> load_styles(css_selector)
-    |> apply_styles(tree)
+    process(html_tree, css_rule_sets, options)
+  end
+  def process(html_tree, css_rules_sets, options) do
+    optimize_steps = Keyword.get(options, :optimize, :none)
+    optimize_options = Keyword.take(options, [:css_selector])
+
+    css_rules_sets
+    |> apply_styles(html_tree)
     |> normalize_styles()
-    |> optimize(optimize_steps, css_selector: css_selector)
+    |> optimize(optimize_steps, optimize_options)
     |> HTMLParser.to_string()
   end
 
@@ -37,8 +54,19 @@ defmodule Premailex.HTMLInlineStyles do
     |> Enum.reduce([], &Enum.concat(&1, &2))
   end
 
-  defp apply_styles(styles, tree) do
-    Enum.reduce(styles, tree, &add_rule_set_to_html(&1, &2))
+  defp apply_styles(styles, html_tree) do
+    html_tree
+    |> HTMLParser.all("body")
+    |> case do
+      []   -> html_tree
+      body -> body
+    end
+    |> List.wrap()
+    |> Enum.reduce(html_tree, fn body_or_html_tree, html_tree ->
+      Util.traverse_until_first(html_tree, body_or_html_tree, fn tree ->
+        Enum.reduce(styles, tree, &add_rule_set_to_html(&1, &2))
+      end)
+    end)
   end
 
   defp load_css({"style", _, content}) do
@@ -138,12 +166,13 @@ defmodule Premailex.HTMLInlineStyles do
   defp optimize(tree, [:all], options), do: optimize(tree, [:remove_style_tags], options)
 
   defp optimize(tree, steps, options) do
-    maybe_remove_style_tags(tree, steps, options)
+    maybe_remove_style_tags(tree, steps, Keyword.get(options, :css_selector))
   end
 
-  defp maybe_remove_style_tags(tree, steps, options) do
+  defp maybe_remove_style_tags(tree, _steps, nil), do: tree
+  defp maybe_remove_style_tags(tree, steps, css_selector) do
     case Enum.member?(steps, :remove_style_tags) do
-      true -> HTMLParser.filter(tree, Keyword.get(options, :css_selector))
+      true -> HTMLParser.filter(tree, css_selector)
       false -> tree
     end
   end

@@ -108,7 +108,7 @@ defmodule Premailex.HTMLInlineStylesTest do
     {:ok, input: @input}
   end
 
-  test "process/1", %{input: input} do
+  test "process/3", %{input: input} do
     parsed = Premailex.HTMLInlineStyles.process(input)
 
     assert parsed =~
@@ -148,7 +148,7 @@ defmodule Premailex.HTMLInlineStylesTest do
     assert parsed =~ "<div class=\"match-order-test-4 same-match\" style=\"color:yellow;\">"
   end
 
-  test "process/1 with css_selector", %{input: input} do
+  test "process/3 with css_selector", %{input: input} do
     parsed =
       Premailex.HTMLInlineStyles.process(input, css_selector: "link[rel=\"stylesheet\"][href]")
 
@@ -156,38 +156,69 @@ defmodule Premailex.HTMLInlineStylesTest do
              "<p style=\"color:#333333;font-family:Arial, sans-serif;font-size:16px;font-weight:bold;line-height:22px;margin:0;padding:0;\">First paragraph"
   end
 
-  test "process/1 with optimize: :all", %{input: input} do
+  test "process/3 with optimize: :all", %{input: input} do
     parsed = Premailex.HTMLInlineStyles.process(input, optimize: :all)
     refute parsed =~ "<style>"
     refute parsed =~ "<link href"
   end
 
-  test "process/1 with optimize: :remove_style_tags", %{input: input} do
+  test "process/3 with optimize: :remove_style_tags", %{input: input} do
     parsed = Premailex.HTMLInlineStyles.process(input, optimize: :remove_style_tags)
     refute parsed =~ "<style>"
     refute parsed =~ "<link href"
   end
 
-  test "process/1 with optimize: [:remove_style_tags]", %{input: input} do
+  test "process/3 with optimize: [:remove_style_tags]", %{input: input} do
     parsed = Premailex.HTMLInlineStyles.process(input, optimize: [:remove_style_tags])
     refute parsed =~ "<style>"
     refute parsed =~ "<link href"
   end
 
-  test "process/1 with optimize: [:unknown]", %{input: input} do
+  test "process/3 with optimize: [:unknown]", %{input: input} do
     parsed = Premailex.HTMLInlineStyles.process(input, optimize: [:unknown])
     assert parsed =~ "<style>"
     assert parsed =~ "<link href"
   end
 
-  test "process/1 with optimize: [:none]", %{input: input} do
+  test "process/3 with optimize: [:none]", %{input: input} do
     parsed = Premailex.HTMLInlineStyles.process(input, optimize: :none)
     assert parsed =~ "<style>"
     assert parsed =~ "<link href"
   end
 
-  test "process/1 with no loaded styles" do
+  test "process/3 with no loaded styles" do
     parsed = Premailex.HTMLInlineStyles.process("<span style=\"width: 100%;\">Hello</span>")
     assert parsed =~ "<span style=\"width: 100%;\">Hello</span>"
+  end
+
+  test "process/3 accepts html tree as first argument" do
+    html_tree = Premailex.HTMLParser.parse(@input)
+    parsed = Premailex.HTMLInlineStyles.process(html_tree)
+
+    assert parsed =~ "<style>"
+    assert parsed =~ "<link href"
+    assert parsed =~ "<body style=\"color:#333333;font-family:Arial, sans-serif;font-size:14px;line-height:22px;\">"
+
+    parsed = Premailex.HTMLInlineStyles.process(html_tree, [optimize: :all])
+
+    refute parsed =~ "<style>"
+    refute parsed =~ "<link href"
+    assert parsed =~ "<body style=\"color:#333333;font-family:Arial, sans-serif;font-size:14px;line-height:22px;\">"
+    end
+
+  test "process/3 accepts css rule set as second argument" do
+    css_rule_set = Premailex.CSSParser.parse("*{color:red;}")
+    parsed = Premailex.HTMLInlineStyles.process(@input, css_rule_set)
+
+    assert parsed =~ "<style>"
+    assert parsed =~ "<link href"
+    assert parsed =~ "<body style=\"color:red;\">"
+
+    css_rule_set = Premailex.CSSParser.parse("*{color:red;}")
+    parsed = Premailex.HTMLInlineStyles.process(@input, css_rule_set, [optimize: :all])
+
+    assert parsed =~ "<style>"
+    assert parsed =~ "<link href"
+    assert parsed =~ "<body style=\"color:red;\">"
   end
 end
