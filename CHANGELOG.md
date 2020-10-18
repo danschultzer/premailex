@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.12 (TBA)
+
+* `Premailex.HTMLInlineStyles.process/3` now supports passing in CSS as an argument
+
 ## v0.3.11 (2020-10-08)
 
 * Fixed bug where the inline styles where applied to more than the first match causing in some cases styles to be missing for subsequent parent elements
