@@ -15,7 +15,7 @@ defmodule Premailex.HTMLInlineStyles do
       * `:all` - apply all optimization steps
       * `:remove_style_tags` - Remove style tags (can be combined in a list)
   """
-  @spec process(String.t() | HTMLParser.html_tree(), [CSSParser.rule_set()], Keyword.t()) :: String.t()
+  @spec process(String.t() | HTMLParser.html_tree(), [CSSParser.rule_set()] | nil, Keyword.t() | nil) :: String.t()
   def process(html_or_html_tree, css_rule_sets_or_options \\ nil, options \\ nil)
   def process(html, css_rule_sets_or_options, options) when is_binary(html) do
     html
