@@ -54,7 +54,7 @@ defmodule Premailex.Mixfile do
   defp docs do
     [
       source_ref: "v#{@version}",
-      main: "README",
+      main: "readme",
       canonical: "http://hexdocs.pm/premailex",
       source_url: "https://github.com/danschultzer/premailex",
       extras: [
