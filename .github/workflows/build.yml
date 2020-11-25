@@ -19,7 +19,7 @@ jobs:
           - elixir: 1.11
             otp: 23.0
             html_parser: meeseeks
-          - elixir: 1.6
+          - elixir: 1.7
             otp: 20.0
     name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}} / ${{matrix.html_parser}}
     steps:
