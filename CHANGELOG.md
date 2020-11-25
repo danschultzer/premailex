@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.13 (2020-11-24)
+
+Fixed spec and docs issues.
+
 ## v0.3.12 (2020-10-18)
 
 * `Premailex.HTMLInlineStyles.process/3` now supports passing in CSS as an argument
