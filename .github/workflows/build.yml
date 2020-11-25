@@ -32,7 +32,7 @@ jobs:
       - run: mix test
         env:
           HTML_PARSER: ${{ matrix.html_parser }}
-      - run: MIX_ENV=test mix credo --ignore Credo.Check.Design.TagTODO
+      - run: MIX_ENV=test mix credo
   deploy:
     needs: test
     runs-on: ubuntu-latest
