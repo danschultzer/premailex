@@ -61,7 +61,7 @@ defmodule Premailex.HTTPAdapter.Httpc do
     end
   end
 
-  defp certifi_and_ssl_verify_fun_available?() do
+  defp certifi_and_ssl_verify_fun_available? do
     Application.ensure_all_started(:certifi)
     Application.ensure_all_started(:ssl_verify_fun)
 

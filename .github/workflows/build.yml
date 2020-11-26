@@ -1,6 +1,6 @@
 name: CI
 
-on: 
+on:
   push:
   pull_request:
   release:
@@ -29,10 +29,10 @@ jobs:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
       - run: mix deps.get
+      - run: MIX_ENV=test mix credo --strict
       - run: mix test
         env:
           HTML_PARSER: ${{ matrix.html_parser }}
-      - run: MIX_ENV=test mix credo
   deploy:
     needs: test
     runs-on: ubuntu-latest

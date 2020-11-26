@@ -23,18 +23,16 @@ defmodule Premailex.HTMLParser.Meeseeks do
   @impl true
   @doc false
   def all(tree, selector) do
-    try do
-      selector = CSS.compile_selectors(selector)
+    selector = CSS.compile_selectors(selector)
 
-      tree
-      |> Meeseeks.parse(:tuple_tree)
-      |> Meeseeks.all(selector)
-      |> Enum.map(&Meeseeks.tree/1)
-    rescue
-      e in Meeseeks.Error ->
-        Logger.warn("Meeseeks error: " <> inspect(e))
-        []
-    end
+    tree
+    |> Meeseeks.parse(:tuple_tree)
+    |> Meeseeks.all(selector)
+    |> Enum.map(&Meeseeks.tree/1)
+  rescue
+    e in Meeseeks.Error ->
+      Logger.warn("Meeseeks error: " <> inspect(e))
+      []
   end
 
   @impl true
