@@ -9,7 +9,7 @@
 
 ## v0.3.13 (2020-11-24)
 
-Fixed spec and docs issues.
+* Fixed spec and docs issues.
 
 ## v0.3.12 (2020-10-18)
 
@@ -62,7 +62,7 @@ Fixed spec and docs issues.
 
 ## v0.3.1
 
-* Handle url values in css rules correctly #25
+* Handle url values in CSS rules correctly #25
 
 ## v0.3.0
 

@@ -10,8 +10,8 @@ defmodule Premailex.Util do
   Traverses tree searching for needle, and will call provided function on
   any occurances.
 
-  If the function returns {:halt, any}, traverse will stop, and result will
-  be {:halt, html_tree}.
+  If the function returns `{:halt, any}`, traverse will stop, and result will
+  be `{:halt, html_tree}`.
 
   ## Examples
 

@@ -1,6 +1,7 @@
 defmodule Premailex.Mixfile do
   use Mix.Project
 
+  @source_url "https://github.com/danschultzer/premailex"
   @version "0.3.13"
 
   def project do
@@ -18,29 +19,35 @@ defmodule Premailex.Mixfile do
       # Docs
       name: "Premailex",
       docs: docs(),
-
-      xref: [exclude: [:certifi, :httpc, Meeseeks, Meeseeks.Document, Meeseeks.Selector.CSS, :ssl_verify_hostname]]
+      xref: [
+        exclude: [
+          :certifi,
+          :httpc,
+          Meeseeks,
+          Meeseeks.Document,
+          Meeseeks.Selector.CSS,
+          :ssl_verify_hostname
+        ]
+      ]
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
     [
       extra_applications: [:logger]
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
       {:floki, "~> 0.19"},
 
-      {:meeseeks, "~> 0.11", optional: true},
       {:certifi, ">= 0.0.0", optional: true},
+      {:meeseeks, "~> 0.11", optional: true},
       {:ssl_verify_fun, ">= 0.0.0", optional: true},
 
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.21", only: :dev}
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
 
@@ -52,7 +59,7 @@ defmodule Premailex.Mixfile do
         "GitHub" => "https://github.com/danschultzer/premailex",
         "Sponsor" => "https://github.com/sponsors/danschultzer"
       },
-      files: ~w(lib LICENSE mix.exs README.md)
+      files: ~w(lib LICENSE mix.exs README.md CHANGELOG.md)
     ]
   end
 
@@ -61,7 +68,7 @@ defmodule Premailex.Mixfile do
       source_ref: "v#{@version}",
       main: "readme",
       canonical: "http://hexdocs.pm/premailex",
-      source_url: "https://github.com/danschultzer/premailex",
+      source_url: @source_url,
       extras: [
         "README.md",
         "CHANGELOG.md"
