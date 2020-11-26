@@ -18,8 +18,16 @@ defmodule Premailex.Mixfile do
       # Docs
       name: "Premailex",
       docs: docs(),
-
-      xref: [exclude: [:certifi, :httpc, Meeseeks, Meeseeks.Document, Meeseeks.Selector.CSS, :ssl_verify_hostname]]
+      xref: [
+        exclude: [
+          :certifi,
+          :httpc,
+          Meeseeks,
+          Meeseeks.Document,
+          Meeseeks.Selector.CSS,
+          :ssl_verify_hostname
+        ]
+      ]
     ]
   end
 
@@ -34,11 +42,9 @@ defmodule Premailex.Mixfile do
   defp deps do
     [
       {:floki, "~> 0.19"},
-
       {:meeseeks, "~> 0.11", optional: true},
       {:certifi, ">= 0.0.0", optional: true},
       {:ssl_verify_fun, ">= 0.0.0", optional: true},
-
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.21", only: :dev}
     ]

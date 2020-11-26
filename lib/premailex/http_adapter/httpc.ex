@@ -20,8 +20,8 @@ defmodule Premailex.HTTPAdapter.Httpc do
   end
 
   defp httpc_request(url, body, headers) do
-    url          = to_charlist(url)
-    headers      = Enum.map(headers, fn {k, v} -> {to_charlist(k), to_charlist(v)} end)
+    url = to_charlist(url)
+    headers = Enum.map(headers, fn {k, v} -> {to_charlist(k), to_charlist(v)} end)
 
     do_httpc_request(url, body, headers)
   end
@@ -29,9 +29,10 @@ defmodule Premailex.HTTPAdapter.Httpc do
   defp do_httpc_request(url, nil, headers) do
     {url, headers}
   end
+
   defp do_httpc_request(url, body, headers) do
     {content_type, headers} = split_content_type_headers(headers)
-    body                    = to_charlist(body)
+    body = to_charlist(body)
 
     {url, headers, content_type, body}
   end
@@ -44,11 +45,14 @@ defmodule Premailex.HTTPAdapter.Httpc do
   end
 
   defp format_response({:ok, {{_, status, _}, headers, body}}) do
-    headers = Enum.map(headers, fn {key, value} -> {String.downcase(to_string(key)), to_string(value)} end)
-    body    = IO.iodata_to_binary(body)
+    headers =
+      Enum.map(headers, fn {key, value} -> {String.downcase(to_string(key)), to_string(value)} end)
+
+    body = IO.iodata_to_binary(body)
 
     {:ok, %HTTPResponse{status: status, headers: headers, body: body}}
   end
+
   defp format_response({:error, error}), do: {:error, error}
 
   defp parse_httpc_opts(nil, url), do: default_httpc_opts(url)
@@ -56,7 +60,7 @@ defmodule Premailex.HTTPAdapter.Httpc do
 
   defp default_httpc_opts(url) do
     case certifi_and_ssl_verify_fun_available?() do
-      true  -> [ssl: ssl_opts(url)]
+      true -> [ssl: ssl_opts(url)]
       false -> []
     end
   end
@@ -71,7 +75,7 @@ defmodule Premailex.HTTPAdapter.Httpc do
   defp app_available?(app) do
     case :application.get_key(app, :vsn) do
       {:ok, _vsn} -> true
-      _           -> false
+      _ -> false
     end
   end
 

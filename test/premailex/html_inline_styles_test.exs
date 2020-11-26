@@ -133,14 +133,24 @@ defmodule Premailex.HTMLInlineStylesTest do
 
     refute parsed =~ "This is a comment"
 
-    assert parsed =~ ~r/(#{Regex.escape("<!--[if (gte mso 9)|(IE)]>")})|(#{Regex.escape("<!-- [if (gte mso 9)|(IE)]>")})/
+    assert parsed =~
+             ~r/(#{Regex.escape("<!--[if (gte mso 9)|(IE)]>")})|(#{
+               Regex.escape("<!-- [if (gte mso 9)|(IE)]>")
+             })/
+
     assert parsed =~ "<p>Downlevel-hidden comment</p>"
     assert parsed =~ ~r/(#{Regex.escape("<![endif]-->")})|(#{Regex.escape("<![endif] -->")})/
 
-    assert parsed =~ ~r/(#{Regex.escape("<!--[if !mso]><!-- -->")})|(#{Regex.escape("<!-- [if !mso]><!--  -->")})/
     assert parsed =~
-            "<p style=\"background-color:#000;color:#000 !important;font-family:Arial, sans-serif;font-size:16px;font-weight:bold;line-height:22px;margin:0;padding:0;\">Downlevel-revealed comment</p>"
-    assert parsed =~ ~r/(#{Regex.escape("<!--<![endif]-->")})|(#{Regex.escape("<!-- <![endif] -->")})/
+             ~r/(#{Regex.escape("<!--[if !mso]><!-- -->")})|(#{
+               Regex.escape("<!-- [if !mso]><!--  -->")
+             })/
+
+    assert parsed =~
+             "<p style=\"background-color:#000;color:#000 !important;font-family:Arial, sans-serif;font-size:16px;font-weight:bold;line-height:22px;margin:0;padding:0;\">Downlevel-revealed comment</p>"
+
+    assert parsed =~
+             ~r/(#{Regex.escape("<!--<![endif]-->")})|(#{Regex.escape("<!-- <![endif] -->")})/
 
     assert parsed =~ "<div class=\"match-order-test-1 same-match\" style=\"color:yellow;\">"
     assert parsed =~ "<div class=\"match-order-test-2 same-match\" style=\"color:yellow;\">"
@@ -197,14 +207,18 @@ defmodule Premailex.HTMLInlineStylesTest do
 
     assert parsed =~ "<style>"
     assert parsed =~ "<link href"
-    assert parsed =~ "<body style=\"color:#333333;font-family:Arial, sans-serif;font-size:14px;line-height:22px;\">"
 
-    parsed = Premailex.HTMLInlineStyles.process(html_tree, [optimize: :all])
+    assert parsed =~
+             "<body style=\"color:#333333;font-family:Arial, sans-serif;font-size:14px;line-height:22px;\">"
+
+    parsed = Premailex.HTMLInlineStyles.process(html_tree, optimize: :all)
 
     refute parsed =~ "<style>"
     refute parsed =~ "<link href"
-    assert parsed =~ "<body style=\"color:#333333;font-family:Arial, sans-serif;font-size:14px;line-height:22px;\">"
-    end
+
+    assert parsed =~
+             "<body style=\"color:#333333;font-family:Arial, sans-serif;font-size:14px;line-height:22px;\">"
+  end
 
   test "process/3 accepts css rule set as second argument" do
     css_rule_set = Premailex.CSSParser.parse("*{color:red;}")
@@ -215,7 +229,7 @@ defmodule Premailex.HTMLInlineStylesTest do
     assert parsed =~ "<body style=\"color:red;\">"
 
     css_rule_set = Premailex.CSSParser.parse("*{color:red;}")
-    parsed = Premailex.HTMLInlineStyles.process(@input, css_rule_set, [optimize: :all])
+    parsed = Premailex.HTMLInlineStyles.process(@input, css_rule_set, optimize: :all)
 
     assert parsed =~ "<style>"
     assert parsed =~ "<link href"

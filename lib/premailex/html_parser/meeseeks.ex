@@ -56,7 +56,7 @@ defmodule Premailex.HTMLParser.Meeseeks do
   @doc false
   def filter(tree, selector) do
     selector = CSS.compile_selectors(selector)
-    tree     = Meeseeks.parse(tree, :tuple_tree)
+    tree = Meeseeks.parse(tree, :tuple_tree)
 
     tree
     |> Meeseeks.all(selector)

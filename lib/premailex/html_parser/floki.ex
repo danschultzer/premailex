@@ -12,13 +12,13 @@ defmodule Premailex.HTMLParser.Floki do
     "< 0.24.0"
     |> floki_version_match?()
     |> case do
-      true  -> apply(Floki, :parse, [html])
+      true -> apply(Floki, :parse, [html])
       false -> apply(Floki, :parse_document, [html])
     end
     |> case do
-      {:ok, [html]}   -> html
+      {:ok, [html]} -> html
       {:ok, document} -> document
-      any             -> any
+      any -> any
     end
   end
 
