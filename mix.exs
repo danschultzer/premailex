@@ -48,7 +48,10 @@ defmodule Premailex.Mixfile do
     [
       maintainers: ["Dan Shultzer"],
       licenses: ["MIT"],
-      links: %{github: "https://github.com/danschultzer/premailex"},
+      links: %{
+        "GitHub" => "https://github.com/danschultzer/premailex",
+        "Sponsor" => "https://github.com/sponsors/danschultzer"
+      },
       files: ~w(lib LICENSE mix.exs README.md)
     ]
   end
