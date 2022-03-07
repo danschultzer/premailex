@@ -157,8 +157,7 @@ defmodule Premailex.HTMLToPlainText do
   defp wordwrap(text) do
     text
     |> String.split("\n")
-    |> Enum.map(&wrap_paragraph(String.trim(&1)))
-    |> Enum.join("\n")
+    |> Enum.map_join("\n", &wrap_paragraph(String.trim(&1)))
   end
 
   defp wrap_paragraph(""), do: ""
