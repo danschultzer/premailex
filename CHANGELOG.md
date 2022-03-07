@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.14 (TBA)
+
+* Added horizontal rule parsing to `Premailex.HTMLToPlainText.process/1`
+
 ## v0.3.13 (2020-11-24)
 
 Fixed spec and docs issues.

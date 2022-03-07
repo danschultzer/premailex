@@ -4,6 +4,8 @@ defmodule Premailex.HTMLToPlainText do
   """
   alias Premailex.{HTMLParser, Util}
 
+  @line_length 65
+
   @doc """
   Processes HTML string into a plain text string.
 
@@ -24,6 +26,7 @@ defmodule Premailex.HTMLToPlainText do
     tree
     |> clear_whitespace()
     |> line_breaks()
+    |> horizontal_rules()
     |> images()
     |> links()
     |> headings()
@@ -99,6 +102,10 @@ defmodule Premailex.HTMLToPlainText do
   defp paragraphs(html), do: Util.traverse(html, "p", &paragraph(&1))
   defp paragraph({_, _, content}), do: HTMLParser.text(content) <> "\n\n"
 
+  defp horizontal_rules(html), do: Util.traverse(html, "hr", &horizontal_rule(&1))
+
+  defp horizontal_rule({_, _, _}), do: String.duplicate("-", @line_length) <> "\n\n"
+
   defp unordered_lists(html), do: Util.traverse(html, "ul", &unordered_list_items(&1))
 
   defp unordered_list_items({_, _, items}) do
@@ -165,7 +172,7 @@ defmodule Premailex.HTMLToPlainText do
   defp wrap_paragraph(string) do
     [word | rest] = String.split(string, ~r/\s+/, trim: true)
 
-    rest |> lines_assemble(65, String.length(word), word, []) |> Enum.join("\n")
+    rest |> lines_assemble(@line_length, String.length(word), word, []) |> Enum.join("\n")
   end
 
   defp lines_assemble([], _, _, line, acc), do: [line | acc] |> Enum.reverse()
