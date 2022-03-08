@@ -56,17 +56,28 @@ defmodule Premailex.HTMLInlineStyles do
   end
 
   defp apply_styles(styles, html_tree) do
-    html_tree
-    |> HTMLParser.all("body")
-    |> case do
-      []   -> html_tree
-      body -> body
-    end
-    |> List.wrap()
-    |> Enum.reduce(html_tree, fn body_or_html_tree, html_tree ->
-      Util.traverse_until_first(html_tree, body_or_html_tree, fn tree ->
-        Enum.reduce(styles, tree, &add_rule_set_to_html(&1, &2))
+    hidden_elements =
+      html_tree
+      |> HTMLParser.all("head")
+      |> Enum.reduce([], fn element, acc ->
+        index = to_string(length(acc))
+
+        acc ++ [{index, element, {"premailex", [{"data-index", index}], []}}]
       end)
+
+    visible_html_tree =
+      Enum.reduce(hidden_elements, html_tree, fn {_index, hidden_element, placeholder}, html_tree ->
+        Util.traverse_until_first(html_tree, hidden_element, fn _element -> placeholder end)
+      end)
+
+    styles
+    |> Enum.reduce(visible_html_tree, &add_rule_set_to_html(&1, &2))
+    |> Util.traverse("premailex", fn {"premailex", attrs, _children} ->
+      {"data-index", index} = Enum.find(attrs, & elem(&1, 0) == "data-index")
+
+      {_index, hidden_element, _replacement} = Enum.find(hidden_elements, & elem(&1, 0) == index)
+
+      hidden_element
     end)
   end
 
