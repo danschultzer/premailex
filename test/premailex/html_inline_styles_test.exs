@@ -5,6 +5,7 @@ defmodule Premailex.HTMLInlineStylesTest do
   alias Premailex.HTTPAdapter.HTTPResponse
 
   @css_link_content """
+  html {color:black;}
   body,table,p,td,ul,ol {color:#333333; font-family:Arial, sans-serif; font-size:14px; line-height:22px;}
 
   h1, h2, h3, h4, p {margin: 0; padding: 0;}
@@ -111,6 +112,8 @@ defmodule Premailex.HTMLInlineStylesTest do
   test "process/3", %{input: input} do
     parsed = Premailex.HTMLInlineStyles.process(input)
 
+    assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color:black;\">"
+
     assert parsed =~
              "<body style=\"color:#333333;font-family:Arial, sans-serif;font-size:14px;line-height:22px;\">"
 
@@ -195,12 +198,14 @@ defmodule Premailex.HTMLInlineStylesTest do
     html_tree = Premailex.HTMLParser.parse(@input)
     parsed = Premailex.HTMLInlineStyles.process(html_tree)
 
+    assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color:black;\">"
     assert parsed =~ "<style>"
     assert parsed =~ "<link href"
     assert parsed =~ "<body style=\"color:#333333;font-family:Arial, sans-serif;font-size:14px;line-height:22px;\">"
 
     parsed = Premailex.HTMLInlineStyles.process(html_tree, [optimize: :all])
 
+    assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color:black;\">"
     refute parsed =~ "<style>"
     refute parsed =~ "<link href"
     assert parsed =~ "<body style=\"color:#333333;font-family:Arial, sans-serif;font-size:14px;line-height:22px;\">"
@@ -210,6 +215,7 @@ defmodule Premailex.HTMLInlineStylesTest do
     css_rule_set = Premailex.CSSParser.parse("*{color:red;}")
     parsed = Premailex.HTMLInlineStyles.process(@input, css_rule_set)
 
+    assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color:red;\">"
     assert parsed =~ "<style>"
     assert parsed =~ "<link href"
     assert parsed =~ "<body style=\"color:red;\">"
@@ -217,6 +223,7 @@ defmodule Premailex.HTMLInlineStylesTest do
     css_rule_set = Premailex.CSSParser.parse("*{color:red;}")
     parsed = Premailex.HTMLInlineStyles.process(@input, css_rule_set, [optimize: :all])
 
+    assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color:red;\">"
     assert parsed =~ "<style>"
     assert parsed =~ "<link href"
     assert parsed =~ "<body style=\"color:red;\">"
