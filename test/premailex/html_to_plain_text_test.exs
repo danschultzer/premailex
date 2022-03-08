@@ -15,6 +15,8 @@ defmodule Premailex.HTMLToPlainTextTest do
   <p><span>Test</span> some very long paragraph with <strong>bold</strong> and <i>italic</i> text, including an <a href="http://example.com">inline link</a>. This should break up on multiple lines.</p>
   <p><span>Test</span>   <strong>consecutive</strong> <i>tags</i>.</p>
 
+  <hr />
+
   <img href="logo.png" alt="Test image" /><br/>
   <img href="logo.png" /><br/>
 
@@ -99,6 +101,8 @@ defmodule Premailex.HTMLToPlainTextTest do
   up on multiple lines.
 
   Test consecutive tags.
+
+  -----------------------------------------------------------------
 
   Test image
 
