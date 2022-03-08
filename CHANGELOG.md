@@ -3,6 +3,8 @@
 ## v0.3.14 (TBA)
 
 * Added horizontal rule parsing to `Premailex.HTMLToPlainText.process/1`
+* `Premailex.Util.traverse/3` no longer strips comments
+* `Premailex.HTMLInlineStyles.process/3` strips empty comments
 
 ## v0.3.13 (2020-11-24)
 

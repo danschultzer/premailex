@@ -111,11 +111,24 @@ defmodule Premailex.HTMLToPlainText do
   defp unordered_list_items({_, _, items}) do
     items
     |> Util.traverse("li", &unordered_list_item(&1))
-    |> Enum.join("")
+    |> join_binaries("")
   end
 
   defp unordered_list_item({_, _, content}) do
     "* " <> HTMLParser.text(content) <> "\n"
+  end
+
+  defp join_binaries(elements, seperator) do
+    Enum.reduce(elements, "", fn
+      element, "" when is_binary(element) ->
+        element
+
+      element, acc when is_binary(element) ->
+        acc <> seperator <> element
+
+      _element, acc ->
+        acc
+    end)
   end
 
   defp ordered_lists(html), do: Util.traverse(html, "ol", &ordered_list_items(&1))
@@ -124,7 +137,7 @@ defmodule Premailex.HTMLToPlainText do
     items
     |> Util.traverse_reduce("li", &ordered_list_item(&1, &2))
     |> elem(0)
-    |> Enum.join("")
+    |> join_binaries("")
   end
 
   defp ordered_list_item({_, _, content}, acc) do
@@ -139,20 +152,20 @@ defmodule Premailex.HTMLToPlainText do
     |> tables()
     |> flatten_table_body()
     |> Util.traverse("tr", &table_rows(&1))
-    |> Enum.join("")
+    |> join_binaries("")
   end
 
   defp table_rows({_, _, [{"th", _, _} | _rest] = table_cells}) do
     table_cells
     |> Util.traverse("th", &HTMLParser.text(&1))
-    |> Enum.join(" ")
+    |> join_binaries(" ")
     |> Kernel.<>("\n")
   end
 
   defp table_rows({_, _, table_cells}) do
     table_cells
     |> Util.traverse("td", &HTMLParser.text(&1))
-    |> Enum.join(" ")
+    |> join_binaries(" ")
     |> Kernel.<>("\n")
   end
 
