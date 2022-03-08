@@ -20,6 +20,9 @@ defmodule Premailex.Util do
 
       iex> Premailex.Util.traverse({"div", [], [{"p", [], ["First paragraph"]}, {"p", [], ["Second paragraph"]}]}, {"p", [], ["Second paragraph"]}, fn {name, attrs, _children} -> {name, attrs, ["Updated"]} end)
       {"div", [], [{"p", [], ["First paragraph"]}, {"p", [], ["Updated"]}]}
+
+      iex> Premailex.Util.traverse({"div", [], [{:comment, "This is a comment"}, {"p", [], ["Paragraph"]}]}, :comment, fn {:comment, _comment} -> {:comment, "Updated"} end)
+      {"div", [], [{:comment, "Updated"}, {"p", [], ["Paragraph"]}]}
   """
   @spec traverse(html_tree, needle, function) :: html_tree | {:halt, html_tree}
   def traverse(html, needles, fun) when is_list(needles),
@@ -36,6 +39,8 @@ defmodule Premailex.Util do
 
   def traverse(text, _, _) when is_binary(text), do: text
 
+  def traverse({:comment, _comment} = element, :comment, fun), do: fun.(element)
+
   def traverse({name, attrs, children} = element, needle, fun) do
     cond do
       needle == name -> fun.(element)
@@ -44,9 +49,6 @@ defmodule Premailex.Util do
     end
   end
 
-  def traverse({:comment, "[if " <> _rest} = comment, _, _), do: comment
-  def traverse({:comment, "<![endif]" <> _rest} = comment, _, _), do: comment
-  def traverse({:comment, _}, _, _), do: ""
   def traverse(element, _, _), do: element
 
   defp maybe_traverse({element, needle, fun}, :ok) do

@@ -43,6 +43,7 @@ defmodule Premailex.HTMLInlineStyles do
     |> apply_styles(html_tree)
     |> normalize_styles()
     |> optimize(optimize_steps, optimize_options)
+    |> remove_empty_comments()
     |> HTMLParser.to_string()
   end
 
@@ -175,6 +176,14 @@ defmodule Premailex.HTMLInlineStyles do
       true -> HTMLParser.filter(tree, css_selector)
       false -> tree
     end
+  end
+
+  defp remove_empty_comments(tree) do
+    Util.traverse(tree, :comment, fn
+      {:comment, "[if " <> _rest} = element -> element
+      {:comment, "<![endif]" <> _rest} = element -> element
+      {:comment, _comment} -> ""
+    end)
   end
 
   defp http_adapter do
