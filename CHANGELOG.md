@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.14 (TBA)
+## v0.3.14 (2022-03-08)
 
 * Added horizontal rule parsing to `Premailex.HTMLToPlainText.process/1`
 * `Premailex.Util.traverse/3` no longer strips comments
