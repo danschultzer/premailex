@@ -95,10 +95,6 @@ By default, premailex uses [`Floki`](https://github.com/philss/floki) to parse H
 config :premailex, html_parser: Premailex.HTMLParser.Meeseeks
 ```
 
-## Planned features
-
-- Expand relative URL's
-
 ## LICENSE
 
 (The MIT License)
