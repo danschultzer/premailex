@@ -21,7 +21,7 @@ defmodule Premailex.HTTPAdapter do
   @callback request(method(), binary(), body(), headers(), Keyword.t()) :: {:ok, map()} | {:error, any()}
 
   @spec user_agent_header() :: {binary(), binary()}
-  def user_agent_header() do
+  def user_agent_header do
     version = Application.spec(:premailex, :vsn) || "0.0.0"
 
     {"User-Agent", "Premailex-#{version}"}

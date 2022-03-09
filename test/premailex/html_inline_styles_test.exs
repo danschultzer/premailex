@@ -221,7 +221,7 @@ defmodule Premailex.HTMLInlineStylesTest do
     assert parsed =~ "<body style=\"color:red;\">"
 
     css_rule_set = Premailex.CSSParser.parse("*{color:red;}")
-    parsed = Premailex.HTMLInlineStyles.process(@input, css_rule_set, [optimize: :all])
+    parsed = Premailex.HTMLInlineStyles.process(@input, css_rule_set, optimize: :all)
 
     assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color:red;\">"
     assert parsed =~ "<style>"

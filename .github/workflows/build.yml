@@ -1,6 +1,6 @@
 name: CI
 
-on: 
+on:
   push:
   pull_request:
   release:
@@ -32,7 +32,7 @@ jobs:
       - run: mix test
         env:
           HTML_PARSER: ${{ matrix.html_parser }}
-      - run: MIX_ENV=test mix credo
+      - run: MIX_ENV=test mix credo --strict
   deploy:
     needs: test
     runs-on: ubuntu-latest

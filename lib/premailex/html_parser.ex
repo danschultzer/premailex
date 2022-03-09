@@ -69,7 +69,7 @@ defmodule Premailex.HTMLParser do
   @spec text(html_tree()) :: binary()
   def text(tree), do: parser().text(tree)
 
-  defp parser() do
+  defp parser do
     Application.get_env(:premailex, :html_parser, @default_parser)
   end
 end
