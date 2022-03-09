@@ -10,6 +10,7 @@ defmodule Premailex.Mixfile do
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      xref: [exclude: [:certifi, :httpc, Meeseeks, Meeseeks.Document, Meeseeks.Selector.CSS, :ssl_verify_hostname]],
 
       # Hex
       description: "Add inline styling to your HTML emails, and transform them to text",
@@ -17,20 +18,16 @@ defmodule Premailex.Mixfile do
 
       # Docs
       name: "Premailex",
-      docs: docs(),
-
-      xref: [exclude: [:certifi, :httpc, Meeseeks, Meeseeks.Document, Meeseeks.Selector.CSS, :ssl_verify_hostname]]
+      docs: docs()
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
     [
       extra_applications: [:logger]
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
       {:floki, "~> 0.19"},
@@ -40,13 +37,13 @@ defmodule Premailex.Mixfile do
       {:ssl_verify_fun, ">= 0.0.0", optional: true},
 
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.21", only: :dev}
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
 
   defp package do
     [
-      maintainers: ["Dan Shultzer"],
+      maintainers: ["Dan Schultzer"],
       licenses: ["MIT"],
       links: %{
         "GitHub" => "https://github.com/danschultzer/premailex",
@@ -59,12 +56,12 @@ defmodule Premailex.Mixfile do
   defp docs do
     [
       source_ref: "v#{@version}",
-      main: "readme",
+      main: "README",
       canonical: "http://hexdocs.pm/premailex",
       source_url: "https://github.com/danschultzer/premailex",
       extras: [
-        "README.md",
-        "CHANGELOG.md"
+        "README.md": [filename: "README"],
+        "CHANGELOG.md": [filename: "CHANGELOG"]
       ]
     ]
   end

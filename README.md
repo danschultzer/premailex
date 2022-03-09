@@ -1,6 +1,6 @@
 # Premailex
 
-[![Build Status](https://travis-ci.org/danschultzer/premailex.svg?branch=master)](https://travis-ci.org/danschultzer/premailex) [![hex.pm](https://img.shields.io/hexpm/v/premailex.svg?style=flat)](https://hex.pm/packages/premailex) [![hex.pm downloads](https://img.shields.io/hexpm/dt/premailex.svg?style=flat)](https://hex.pm/packages/premailex)
+![Build Status](https://img.shields.io/github/workflow/status/danschultzer/premailex/CI/master) [![hex.pm](https://img.shields.io/hexpm/v/premailex.svg?style=flat)](https://hex.pm/packages/premailex) [![hex.pm downloads](https://img.shields.io/hexpm/dt/premailex.svg?style=flat)](https://hex.pm/packages/premailex)
 
 Preflight for your HTML emails. Adds inline styling, and converts HTML to plain text.
 
@@ -103,7 +103,7 @@ config :premailex, html_parser: Premailex.HTMLParser.Meeseeks
 
 (The MIT License)
 
-Copyright (c) 2017-2019 Dan Schultzer & the Contributors
+Copyright (c) 2017 Dan Schultzer & the Contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
