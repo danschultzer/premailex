@@ -4,7 +4,7 @@ defmodule Premailex.Util do
   """
 
   @type html_tree :: Premailex.HTMLParser.html_tree()
-  @type needle :: binary | html_tree
+  @type needle :: binary | html_tree | :comment
 
   @doc """
   Traverses tree searching for needle, and will call provided function on
