@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.15 (TBA)
+
+* Fixed invalid spec in `Premailex.Util.traverse/3`
+
 ## v0.3.14 (2022-03-08)
 
 * Added horizontal rule parsing to `Premailex.HTMLToPlainText.process/1`
