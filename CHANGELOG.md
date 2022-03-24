@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.15 (TBA)
+## v0.3.15 (2022-03-24)
 
 * Fixed invalid spec in `Premailex.Util.traverse/3`
 
