@@ -183,9 +183,9 @@ defmodule Premailex.CSSParser do
   """
   @spec to_string([rule]) :: String.t()
   def to_string(rules) when is_list(rules),
-    do: Enum.reduce(rules, "", &"#{&2}#{__MODULE__.to_string(&1)}")
+    do: Enum.reduce(rules, "", &"#{&2} #{__MODULE__.to_string(&1)}")
 
-  def to_string(%{directive: directive, value: value}), do: "#{directive}:#{value};"
+  def to_string(%{directive: directive, value: value}), do: "#{directive}: #{value};"
 
   defp calculate_specificity(selector) do
     b = ~r/\#/ |> Regex.scan(selector) |> length()
