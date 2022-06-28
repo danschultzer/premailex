@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.16 (TBA)
+
+* `Premailex.CSSParser.to_string/1` now adds whitespace between inline style rules
+
 ## v0.3.15 (2022-03-24)
 
 * Fixed invalid spec in `Premailex.Util.traverse/3`
