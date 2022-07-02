@@ -176,16 +176,17 @@ defmodule Premailex.CSSParser do
   ## Examples
 
       iex> Premailex.CSSParser.to_string([%{directive: "background-color", value: "#fff"}, %{directive: "color", value: "#000"}])
-      "background-color:#fff;color:#000;"
+      "background-color: #fff; color: #000;"
 
       iex> Premailex.CSSParser.to_string(%{directive: "background-color", value: "#fff"})
-      "background-color:#fff;"
+      "background-color: #fff;"
   """
   @spec to_string([rule]) :: String.t()
-  def to_string(rules) when is_list(rules),
-    do: Enum.reduce(rules, "", &"#{&2}#{__MODULE__.to_string(&1)}")
+  def to_string(rules) when is_list(rules) do
+    Enum.map_join(rules, " ", &__MODULE__.to_string/1)
+  end
 
-  def to_string(%{directive: directive, value: value}), do: "#{directive}:#{value};"
+  def to_string(%{directive: directive, value: value}), do: "#{directive}: #{value};"
 
   defp calculate_specificity(selector) do
     b = ~r/\#/ |> Regex.scan(selector) |> length()

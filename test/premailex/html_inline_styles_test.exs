@@ -112,19 +112,19 @@ defmodule Premailex.HTMLInlineStylesTest do
   test "process/3", %{input: input} do
     parsed = Premailex.HTMLInlineStyles.process(input)
 
-    assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color:black;\">"
+    assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
 
     assert parsed =~
-             "<body style=\"color:#333333;font-family:Arial, sans-serif;font-size:14px;line-height:22px;\">"
+             "<body style=\"color: #333333; font-family: Arial, sans-serif; font-size: 14px; line-height: 22px;\">"
 
     assert parsed =~
-             "<h1 style=\"color:#2eac6d;font-size:24px;line-height:24px !important;margin:0;padding:0;padding-bottom:8px;\">"
+             "<h1 style=\"color: #2eac6d; font-size: 24px; line-height: 24px !important; margin: 0; padding: 0; padding-bottom: 8px;\">"
 
     assert parsed =~
-             "<p style=\"background-color:#fff;color:#000 !important;font-family:Arial, sans-serif;font-size:16px;font-weight:bold;line-height:22px;margin:0;padding:0;\">First paragraph"
+             "<p style=\"background-color: #fff; color: #000 !important; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; line-height: 22px; margin: 0; padding: 0;\">First paragraph"
 
     assert parsed =~
-             "<p style=\"background-color:#fff;color:#000 !important;font-family:Arial, sans-serif;font-size:13px;line-height:22px;margin:0;padding:0;\">"
+             "<p style=\"background-color: #fff; color: #000 !important; font-family: Arial, sans-serif; font-size: 13px; line-height: 22px; margin: 0; padding: 0;\">"
 
     # Ensure that whitespace is maintained when it would affect display
     assert parsed =~ "<span>Test</span> <span>consecutive</span> <span>tags</span>"
@@ -142,13 +142,13 @@ defmodule Premailex.HTMLInlineStylesTest do
 
     assert parsed =~ ~r/(#{Regex.escape("<!--[if !mso]><!-- -->")})|(#{Regex.escape("<!-- [if !mso]><!--  -->")})/
     assert parsed =~
-            "<p style=\"background-color:#000;color:#000 !important;font-family:Arial, sans-serif;font-size:16px;font-weight:bold;line-height:22px;margin:0;padding:0;\">Downlevel-revealed comment</p>"
+            "<p style=\"background-color: #000; color: #000 !important; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; line-height: 22px; margin: 0; padding: 0;\">Downlevel-revealed comment</p>"
     assert parsed =~ ~r/(#{Regex.escape("<!--<![endif]-->")})|(#{Regex.escape("<!-- <![endif] -->")})/
 
-    assert parsed =~ "<div class=\"match-order-test-1 same-match\" style=\"color:yellow;\">"
-    assert parsed =~ "<div class=\"match-order-test-2 same-match\" style=\"color:yellow;\">"
-    assert parsed =~ "<div class=\"match-order-test-3 same-match\" style=\"color:yellow;\">"
-    assert parsed =~ "<div class=\"match-order-test-4 same-match\" style=\"color:yellow;\">"
+    assert parsed =~ "<div class=\"match-order-test-1 same-match\" style=\"color: yellow;\">"
+    assert parsed =~ "<div class=\"match-order-test-2 same-match\" style=\"color: yellow;\">"
+    assert parsed =~ "<div class=\"match-order-test-3 same-match\" style=\"color: yellow;\">"
+    assert parsed =~ "<div class=\"match-order-test-4 same-match\" style=\"color: yellow;\">"
   end
 
   test "process/3 with css_selector", %{input: input} do
@@ -156,7 +156,7 @@ defmodule Premailex.HTMLInlineStylesTest do
       Premailex.HTMLInlineStyles.process(input, css_selector: "link[rel=\"stylesheet\"][href]")
 
     assert parsed =~
-             "<p style=\"color:#333333;font-family:Arial, sans-serif;font-size:16px;font-weight:bold;line-height:22px;margin:0;padding:0;\">First paragraph"
+             "<p style=\"color: #333333; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; line-height: 22px; margin: 0; padding: 0;\">First paragraph"
   end
 
   test "process/3 with optimize: :all", %{input: input} do
@@ -198,34 +198,34 @@ defmodule Premailex.HTMLInlineStylesTest do
     html_tree = Premailex.HTMLParser.parse(@input)
     parsed = Premailex.HTMLInlineStyles.process(html_tree)
 
-    assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color:black;\">"
+    assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
     assert parsed =~ "<style>"
     assert parsed =~ "<link href"
-    assert parsed =~ "<body style=\"color:#333333;font-family:Arial, sans-serif;font-size:14px;line-height:22px;\">"
+    assert parsed =~ "<body style=\"color: #333333; font-family: Arial, sans-serif; font-size: 14px; line-height: 22px;\">"
 
     parsed = Premailex.HTMLInlineStyles.process(html_tree, [optimize: :all])
 
-    assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color:black;\">"
+    assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
     refute parsed =~ "<style>"
     refute parsed =~ "<link href"
-    assert parsed =~ "<body style=\"color:#333333;font-family:Arial, sans-serif;font-size:14px;line-height:22px;\">"
+    assert parsed =~ "<body style=\"color: #333333; font-family: Arial, sans-serif; font-size: 14px; line-height: 22px;\">"
     end
 
   test "process/3 accepts css rule set as second argument" do
     css_rule_set = Premailex.CSSParser.parse("*{color:red;}")
     parsed = Premailex.HTMLInlineStyles.process(@input, css_rule_set)
 
-    assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color:red;\">"
+    assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: red;\">"
     assert parsed =~ "<style>"
     assert parsed =~ "<link href"
-    assert parsed =~ "<body style=\"color:red;\">"
+    assert parsed =~ "<body style=\"color: red;\">"
 
     css_rule_set = Premailex.CSSParser.parse("*{color:red;}")
     parsed = Premailex.HTMLInlineStyles.process(@input, css_rule_set, optimize: :all)
 
-    assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color:red;\">"
+    assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: red;\">"
     assert parsed =~ "<style>"
     assert parsed =~ "<link href"
-    assert parsed =~ "<body style=\"color:red;\">"
+    assert parsed =~ "<body style=\"color: red;\">"
   end
 end
