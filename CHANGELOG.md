@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.17 (TBA)
+
+* `Premailex.HTMLInlineStyles.process/3` now warns when styles can't be loaded from URL's
+* Require Elixir 1.11
+
 ## v0.3.16 (2022-07-01)
 
 * `Premailex.CSSParser.to_string/1` now adds whitespace between inline style rules

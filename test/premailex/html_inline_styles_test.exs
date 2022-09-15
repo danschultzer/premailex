@@ -2,7 +2,7 @@ defmodule Premailex.HTMLInlineStylesTest do
   use ExUnit.Case
   doctest Premailex.HTMLInlineStyles
 
-  alias Premailex.HTTPAdapter.HTTPResponse
+  alias ExUnit.CaptureLog
 
   @css_link_content """
   html {color:black;}
@@ -29,7 +29,6 @@ defmodule Premailex.HTMLInlineStylesTest do
     <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
       <link href="http://localhost/styles.css" media="all" rel="stylesheet">
-      <link href="http://localhost/invalid_styles.css" media="all" rel="stylesheet">
       <link media="all" rel="stylesheet">
       <title>Test</title>
       <style>#{@css_inline_content}</style>
@@ -92,21 +91,18 @@ defmodule Premailex.HTMLInlineStylesTest do
   </html>
   """
 
-  module =
-    quote do
-      def request(:get, "http://localhost/styles.css", _body, _headers, _opts),
-        do: {:ok, %HTTPResponse{status: 200, body: unquote(@css_link_content)}}
+  setup context do
+    input =
+      case context[:test_server] do
+        false ->
+          @input
 
-      def request(:get, "http://localhost/invalid_styles.css", _body, _headers, _opts),
-        do: {:ok, %HTTPResponse{status: 404}}
-    end
+        _ ->
+          TestServer.add("/styles.css", to: fn conn -> Plug.Conn.send_resp(conn, 200, @css_link_content) end)
+          String.replace(@input, "http://localhost", TestServer.url())
+      end
 
-  Module.create(HTTPAdapterMock, module, Macro.Env.location(__ENV__))
-
-  setup do
-    Application.put_env(:premailex, :http_adapter, HTTPAdapterMock)
-
-    {:ok, input: @input}
+    {:ok, input: input}
   end
 
   test "process/3", %{input: input} do
@@ -151,6 +147,57 @@ defmodule Premailex.HTMLInlineStylesTest do
     assert parsed =~ "<div class=\"match-order-test-4 same-match\" style=\"color: yellow;\">"
   end
 
+  @tag test_server: false
+  test "process/3 when styles can't be loaded due to no network", %{input: input} do
+    assert CaptureLog.capture_log(fn ->
+      refute Premailex.HTMLInlineStyles.process(input) =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
+    end) =~ "Ignoring http://localhost/styles.css styles because of unexpected error from Premailex.HTTPAdapter.Httpc:"
+  end
+
+  @tag test_server: false
+  test "process/3 when styles can't be loaded due to 404", %{input: input} do
+    TestServer.add("/styles.css", to: fn conn -> Plug.Conn.send_resp(conn, 404, "Not Found") end)
+    input = String.replace(input, "http://localhost", TestServer.url())
+
+    assert CaptureLog.capture_log(fn ->
+      refute Premailex.HTMLInlineStyles.process(input) =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
+    end) =~ "Ignoring #{TestServer.url()}/styles.css styles because received unexpected HTTP status: 404"
+  end
+
+  @tag test_server: false
+  test "process/3 when styles can't be loaded due to SSL error", %{input: input} do
+    TestServer.start(scheme: :https)
+    input = String.replace(input, "http://localhost", TestServer.url())
+
+    assert CaptureLog.capture_log(fn ->
+      refute Premailex.HTMLInlineStyles.process(input) =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
+    end) =~ ":unknown_ca"
+  end
+
+  @tag test_server: :false
+  test "process/3 when styles loads on SSL", %{input: input} do
+    TestServer.start(scheme: :https)
+    TestServer.add("/styles.css", to: fn conn -> Plug.Conn.send_resp(conn, 200, @css_link_content) end)
+
+    on_exit(fn ->
+      Application.delete_env(:premailex, :http_adapter)
+    end)
+
+    ssl_opts =
+      [
+        verify: :verify_peer,
+        depth: 99,
+        cacerts: TestServer.x509_suite().cacerts,
+        verify_fun: {&:ssl_verify_hostname.verify_fun/3, check_hostname: 'localhost'}
+      ]
+
+    Application.put_env(:premailex, :http_adapter, {Premailex.HTTPAdapter.Httpc, [ssl: ssl_opts]})
+    input = String.replace(input, "http://localhost", TestServer.url())
+
+    assert parsed = Premailex.HTMLInlineStyles.process(input)
+    assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
+  end
+
   test "process/3 with css_selector", %{input: input} do
     parsed =
       Premailex.HTMLInlineStyles.process(input, css_selector: "link[rel=\"stylesheet\"][href]")
@@ -189,31 +236,36 @@ defmodule Premailex.HTMLInlineStylesTest do
     assert parsed =~ "<link href"
   end
 
+  @tag test_server: false
   test "process/3 with no loaded styles" do
     parsed = Premailex.HTMLInlineStyles.process("<span style=\"width: 100%;\">Hello</span>")
     assert parsed =~ "<span style=\"width: 100%;\">Hello</span>"
   end
 
-  test "process/3 accepts html tree as first argument" do
-    html_tree = Premailex.HTMLParser.parse(@input)
+  test "process/3 accepts html tree as first argument", %{input: input} do
+    html_tree = Premailex.HTMLParser.parse(input)
     parsed = Premailex.HTMLInlineStyles.process(html_tree)
 
     assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
     assert parsed =~ "<style>"
     assert parsed =~ "<link href"
     assert parsed =~ "<body style=\"color: #333333; font-family: Arial, sans-serif; font-size: 14px; line-height: 22px;\">"
+  end
 
+  test "process/3 accepts html tree as first argument and options as second", %{input: input} do
+    html_tree = Premailex.HTMLParser.parse(input)
     parsed = Premailex.HTMLInlineStyles.process(html_tree, [optimize: :all])
 
     assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
     refute parsed =~ "<style>"
     refute parsed =~ "<link href"
     assert parsed =~ "<body style=\"color: #333333; font-family: Arial, sans-serif; font-size: 14px; line-height: 22px;\">"
-    end
+  end
 
-  test "process/3 accepts css rule set as second argument" do
+  @tag test_server: false
+  test "process/3 accepts css rule set as second argument", %{input: input} do
     css_rule_set = Premailex.CSSParser.parse("*{color:red;}")
-    parsed = Premailex.HTMLInlineStyles.process(@input, css_rule_set)
+    parsed = Premailex.HTMLInlineStyles.process(input, css_rule_set)
 
     assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: red;\">"
     assert parsed =~ "<style>"
@@ -221,7 +273,7 @@ defmodule Premailex.HTMLInlineStylesTest do
     assert parsed =~ "<body style=\"color: red;\">"
 
     css_rule_set = Premailex.CSSParser.parse("*{color:red;}")
-    parsed = Premailex.HTMLInlineStyles.process(@input, css_rule_set, optimize: :all)
+    parsed = Premailex.HTMLInlineStyles.process(input, css_rule_set, optimize: :all)
 
     assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: red;\">"
     assert parsed =~ "<style>"

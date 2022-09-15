@@ -19,12 +19,10 @@ jobs:
           - elixir: 1.11
             otp: 23.0
             html_parser: meeseeks
-          - elixir: 1.7
-            otp: 20.0
     name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}} / ${{matrix.html_parser}}
     steps:
       - uses: actions/checkout@v2
-      - uses: erlef/setup-elixir@v1
+      - uses: erlef/setup-beam@v1
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
@@ -42,7 +40,7 @@ jobs:
       HEX_API_KEY: ${{secrets.HEX_API_KEY}}
     steps:
       - uses: actions/checkout@v2
-      - uses: erlef/setup-elixir@v1
+      - uses: erlef/setup-beam@v1
         with:
           otp-version: 25.0
           elixir-version: 1.14
