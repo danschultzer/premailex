@@ -7,7 +7,7 @@ defmodule Premailex.Mixfile do
     [
       app: :premailex,
       version: @version,
-      elixir: "~> 1.7",
+      elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       xref: [exclude: [:certifi, :httpc, Meeseeks, Meeseeks.Document, Meeseeks.Selector.CSS, :ssl_verify_hostname]],
