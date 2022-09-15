@@ -2,6 +2,8 @@ defmodule Premailex.HTMLInlineStylesTest do
   use ExUnit.Case
   doctest Premailex.HTMLInlineStyles
 
+  alias ExUnit.CaptureLog
+
   @css_link_content """
   html {color:black;}
   body,table,p,td,ul,ol {color:#333333; font-family:Arial, sans-serif; font-size:14px; line-height:22px;}
@@ -95,12 +97,7 @@ defmodule Premailex.HTMLInlineStylesTest do
         false ->
           @input
 
-        404 ->
-          TestServer.add("/styles.css", to: fn conn -> Plug.Conn.send_resp(conn, 404, "Not Found") end)
-
-          @input
-
-        any ->
+        _ ->
           TestServer.add("/styles.css", to: fn conn -> Plug.Conn.send_resp(conn, 200, @css_link_content) end)
           String.replace(@input, "http://localhost", TestServer.url())
       end
@@ -148,6 +145,57 @@ defmodule Premailex.HTMLInlineStylesTest do
     assert parsed =~ "<div class=\"match-order-test-2 same-match\" style=\"color: yellow;\">"
     assert parsed =~ "<div class=\"match-order-test-3 same-match\" style=\"color: yellow;\">"
     assert parsed =~ "<div class=\"match-order-test-4 same-match\" style=\"color: yellow;\">"
+  end
+
+  @tag test_server: false
+  test "process/3 when styles can't be loaded due to no network", %{input: input} do
+    assert CaptureLog.capture_log(fn ->
+      refute Premailex.HTMLInlineStyles.process(input) =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
+    end) =~ "Ignoring http://localhost/styles.css styles because of unexpected error from Premailex.HTTPAdapter.Httpc:"
+  end
+
+  @tag test_server: false
+  test "process/3 when styles can't be loaded due to 404", %{input: input} do
+    TestServer.add("/styles.css", to: fn conn -> Plug.Conn.send_resp(conn, 404, "Not Found") end)
+    input = String.replace(input, "http://localhost", TestServer.url())
+
+    assert CaptureLog.capture_log(fn ->
+      refute Premailex.HTMLInlineStyles.process(input) =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
+    end) =~ "Ignoring #{TestServer.url()}/styles.css styles because received unexpected HTTP status: 404"
+  end
+
+  @tag test_server: false
+  test "process/3 when styles can't be loaded due to SSL error", %{input: input} do
+    TestServer.start(scheme: :https)
+    input = String.replace(input, "http://localhost", TestServer.url())
+
+    assert CaptureLog.capture_log(fn ->
+      refute Premailex.HTMLInlineStyles.process(input) =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
+    end) =~ ":unknown_ca"
+  end
+
+  @tag test_server: :false
+  test "process/3 when styles loads on SSL", %{input: input} do
+    TestServer.start(scheme: :https)
+    TestServer.add("/styles.css", to: fn conn -> Plug.Conn.send_resp(conn, 200, @css_link_content) end)
+
+    on_exit(fn ->
+      Application.delete_env(:premailex, :http_adapter)
+    end)
+
+    ssl_opts =
+      [
+        verify: :verify_peer,
+        depth: 99,
+        cacerts: TestServer.x509_suite().cacerts,
+        verify_fun: {&:ssl_verify_hostname.verify_fun/3, check_hostname: 'localhost'}
+      ]
+
+    Application.put_env(:premailex, :http_adapter, {Premailex.HTTPAdapter.Httpc, [ssl: ssl_opts]})
+    input = String.replace(input, "http://localhost", TestServer.url())
+
+    assert parsed = Premailex.HTMLInlineStyles.process(input)
+    assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
   end
 
   test "process/3 with css_selector", %{input: input} do

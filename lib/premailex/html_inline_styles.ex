@@ -2,6 +2,7 @@ defmodule Premailex.HTMLInlineStyles do
   @moduledoc """
   Module that processes inline styling in HMTL.
   """
+  require Logger
 
   alias Premailex.{CSSParser, HTMLParser, Util}
 
@@ -94,13 +95,22 @@ defmodule Premailex.HTMLInlineStyles do
 
     :get
     |> http_adapter.request(url, nil, [], opts)
-    |> parse_body()
+    |> parse_body(http_adapter, url)
   end
 
-  defp parse_body({:ok, %{status: status, body: body}}) when status in 200..399 do
+  defp parse_body({:ok, %{status: status, body: body}}, _http_adapter, _url) when status in 200..399 do
     CSSParser.parse(body)
   end
-  defp parse_body(_any), do: nil
+  defp parse_body({:ok, %{status: status}}, _http_adapter, url) do
+    Logger.warn("Ignoring #{url} styles because received unexpected HTTP status: #{status}")
+
+    nil
+  end
+  defp parse_body({:error, error}, http_adapter, url) do
+    Logger.warn("Ignoring #{url} styles because of unexpected error from #{inspect http_adapter}:\n\n#{inspect error}")
+
+    nil
+  end
 
   defp add_rule_set_to_html(%{selector: selector, rules: rules, specificity: specificity}, html) do
     html
