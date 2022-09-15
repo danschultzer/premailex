@@ -37,7 +37,8 @@ defmodule Premailex.Mixfile do
       {:ssl_verify_fun, ">= 0.0.0", optional: true},
 
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
-      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
+      {:test_server, "~> 0.1.5", only: [:test]}
     ]
   end
 
