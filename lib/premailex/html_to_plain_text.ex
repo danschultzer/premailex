@@ -171,6 +171,7 @@ defmodule Premailex.HTMLToPlainText do
 
   defp flatten_table_body(elements), do: Enum.flat_map(elements, &remove_tbody/1)
 
+  defp remove_tbody({"thead", [], table_cells}), do: table_cells
   defp remove_tbody({"tbody", [], table_cells}), do: table_cells
   defp remove_tbody(elem), do: [elem]
 
