@@ -62,7 +62,8 @@ defmodule Premailex.CSSParser do
 
   defp parse_selectors_rules([_, selector, rules]) do
     selector
-    |> String.split(",")
+    # Ignore escaped commas
+    |> String.split(~r/(?<!\\),/)
     |> Enum.map(&parse_selector_rules(&1, rules))
   end
 

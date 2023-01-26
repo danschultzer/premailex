@@ -18,6 +18,7 @@ defmodule Premailex.CSSParserTest do
     src: url("/fonts/OpenSans-Regular-webfont.woff2") format("woff2"),
          url("/fonts/OpenSans-Regular-webfont.woff") format("woff");
   }
+  .with\\,escaped\\,commas {}
   """
 
   @parsed [
@@ -54,6 +55,11 @@ defmodule Premailex.CSSParserTest do
       ],
       selector: "div p > a:hover",
       specificity: 4
+    },
+    %{
+      rules: [],
+      selector: ".with\\,escaped\\,commas",
+      specificity: 1
     }
   ]
 
