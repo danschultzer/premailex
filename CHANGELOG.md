@@ -4,6 +4,7 @@
 
 * `Premailex.HTMLInlineStyles.process/3` now warns when styles can't be loaded from URL's
 * `Premailex.HTMLInlineStyles.process/1` now parses `<thead>` and `<tfoot>` elements
+* `Premailex.CSSParser.parse/1` now handles escaped commas
 * Require Elixir 1.11
 
 ## v0.3.16 (2022-07-01)
