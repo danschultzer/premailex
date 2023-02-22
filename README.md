@@ -1,6 +1,6 @@
 # Premailex
 
-![Build Status](https://img.shields.io/github/workflow/status/danschultzer/premailex/CI/master) [![hex.pm](https://img.shields.io/hexpm/v/premailex.svg?style=flat)](https://hex.pm/packages/premailex) [![hex.pm downloads](https://img.shields.io/hexpm/dt/premailex.svg?style=flat)](https://hex.pm/packages/premailex)
+[![Github CI](https://github.com/danschultzer/premailex/workflows/CI/badge.svg)](https://github.com/danschultzer/premailex/actions?query=workflow%3ACI) [![hexdocs.pm](https://img.shields.io/badge/api-docs-green.svg?style=flat)](https://hexdocs.pm/premailex) [![hex.pm](https://img.shields.io/hexpm/v/premailex.svg?style=flat)](https://hex.pm/packages/premailex) [![hex.pm downloads](https://img.shields.io/hexpm/dt/premailex.svg?style=flat)](https://hex.pm/packages/premailex)
 
 Preflight for your HTML emails. Adds inline styling, and converts HTML to plain text.
 
