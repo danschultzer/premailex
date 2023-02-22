@@ -9,27 +9,30 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
-        include:
-          - elixir: 1.14
-            otp: 25.0
-            deploy: true
-          - elixir: 1.11
-            otp: 23.0
-            html_parser: meeseeks
-    name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}} / ${{matrix.html_parser}}
+        html_parser: [floki, meeseeks]
+        version:
+          - otp: 25.0
+            elixir: 1.14
+            os: ubuntu-latest
+          - otp: 23.0
+            elixir: 1.11
+            # It's necessary to run on ubuntu 20.04 for OTP 20 - 23
+            # See https://github.com/erlef/setup-beam
+            os: ubuntu-20.04
+
+    runs-on: ${{ matrix.version.os }}
+    name: OTP ${{matrix.version.otp}} / Elixir ${{matrix.version.elixir}} / ${{matrix.html_parser}}
     steps:
       - uses: actions/checkout@v2
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: ${{matrix.otp}}
-          elixir-version: ${{matrix.elixir}}
+          otp-version: ${{matrix.version.otp}}
+          elixir-version: ${{matrix.version.elixir}}
       - run: mix deps.get
-      - run: mix test
-        env:
-          HTML_PARSER: ${{ matrix.html_parser }}
+      - run: MIX_ENV=test mix compile
+      - run: HTML_PARSER=${{matrix.html_parser}} mix test
       - run: MIX_ENV=test mix credo --strict
   deploy:
     needs: test
