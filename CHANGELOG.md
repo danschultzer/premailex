@@ -3,6 +3,7 @@
 ## v0.3.17 (TBA)
 
 * `Premailex.HTMLInlineStyles.process/3` now warns when styles can't be loaded from URL's
+* `Premailex.HTMLInlineStyles.process/1` now parses `<thead>` and `<tfoot>` elements
 * Require Elixir 1.11
 
 ## v0.3.16 (2022-07-01)

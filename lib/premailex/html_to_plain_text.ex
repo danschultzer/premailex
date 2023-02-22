@@ -150,7 +150,7 @@ defmodule Premailex.HTMLToPlainText do
     # Calling tables/1 to make sure all nested tables have been processed
     table_rows
     |> tables()
-    |> flatten_table_body()
+    |> flatten_table_elements()
     |> Util.traverse("tr", &table_rows(&1))
     |> join_binaries("")
   end
@@ -169,11 +169,12 @@ defmodule Premailex.HTMLToPlainText do
     |> Kernel.<>("\n")
   end
 
-  defp flatten_table_body(elements), do: Enum.flat_map(elements, &remove_tbody/1)
+  defp flatten_table_elements(elements), do: Enum.flat_map(elements, &flatten_table_element/1)
 
-  defp remove_tbody({"thead", [], table_cells}), do: table_cells
-  defp remove_tbody({"tbody", [], table_cells}), do: table_cells
-  defp remove_tbody(elem), do: [elem]
+  defp flatten_table_element({"thead", [], table_cells}), do: table_cells
+  defp flatten_table_element({"tbody", [], table_cells}), do: table_cells
+  defp flatten_table_element({"tfoot", [], table_cells}), do: table_cells
+  defp flatten_table_element(elem), do: [elem]
 
   defp wordwrap(text) do
     text
