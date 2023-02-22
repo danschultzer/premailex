@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.17 (TBA)
+## v0.3.17 (2023-02-21)
 
 * `Premailex.HTMLInlineStyles.process/3` now warns when styles can't be loaded from URL's
 * `Premailex.HTMLInlineStyles.process/1` now parses `<thead>` and `<tfoot>` elements
