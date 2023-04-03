@@ -45,7 +45,7 @@ defmodule Premailex.HTMLToPlainTextTest do
         <th>thead value</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody class="a-class">
       <tr>
         <td>tbody key</td>
         <td>tbody value</td>
