@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.18 (TBA)
+## v0.3.18 (2023-04-07)
 
 * Fixed bug in `Premailex.HTMLToPlainText.parse/3` with `<thread>`, `<tbody>`, `<tfoot>` being excluded if the HTML element had any attributes
 
