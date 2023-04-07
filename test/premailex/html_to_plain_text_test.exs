@@ -152,4 +152,23 @@ defmodule Premailex.HTMLToPlainTextTest do
   test "process/1" do
     assert Premailex.HTMLToPlainText.process(@input) == String.trim(@parsed)
   end
+
+  test "process/1 with attributes" do
+    assert Premailex.HTMLToPlainText.process(add_attributes(@input)) == String.trim(@parsed)
+  end
+
+  defp add_attributes(html) do
+    html
+    |> Premailex.HTMLParser.parse()
+    |> add_attribute("data-attribute", "value")
+    |> Premailex.HTMLParser.to_string()
+  end
+
+  defp add_attribute(elements, key, value) when is_list(elements) do
+    Enum.map(elements, &add_attribute(&1, key, value))
+  end
+  defp add_attribute({tag, attrs, children}, key, value) do
+    {tag, attrs ++ [{key, value}], add_attribute(children, key, value)}
+  end
+  defp add_attribute(other, _key, _value), do: other
 end
