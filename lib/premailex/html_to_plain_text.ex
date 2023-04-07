@@ -171,9 +171,9 @@ defmodule Premailex.HTMLToPlainText do
 
   defp flatten_table_elements(elements), do: Enum.flat_map(elements, &flatten_table_element/1)
 
-  defp flatten_table_element({"thead", [], table_cells}), do: table_cells
-  defp flatten_table_element({"tbody", [], table_cells}), do: table_cells
-  defp flatten_table_element({"tfoot", [], table_cells}), do: table_cells
+  defp flatten_table_element({"thead", _, table_cells}), do: table_cells
+  defp flatten_table_element({"tbody", _, table_cells}), do: table_cells
+  defp flatten_table_element({"tfoot", _, table_cells}), do: table_cells
   defp flatten_table_element(elem), do: [elem]
 
   defp wordwrap(text) do

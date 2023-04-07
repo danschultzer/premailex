@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.18 (TBA)
+
+* Fixed bug in `Premailex.HTMLToPlainText.parse/3` with `<thread>`, `<tbody>`, `<tfoot>` being excluded if the HTML element had any attributes
+
 ## v0.3.17 (2023-02-21)
 
 * `Premailex.HTMLInlineStyles.process/3` now warns when styles can't be loaded from URL's
