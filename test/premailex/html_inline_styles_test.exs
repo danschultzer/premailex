@@ -5,6 +5,8 @@ defmodule Premailex.HTMLInlineStylesTest do
   alias ExUnit.CaptureLog
 
   @css_link_content """
+  @charset "utf-8";
+
   html {color:black;}
   body,table,p,td,ul,ol {color:#333333; font-family:Arial, sans-serif; font-size:14px; line-height:22px;}
 
