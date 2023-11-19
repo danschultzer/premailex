@@ -37,6 +37,7 @@ defmodule Premailex.CSSParser do
   )/ix
   @comments ~r/\/\*[\s\S]*?\*\//m
   @media_queries ~r/@media[^{]+{([\s\S]+?})\s*}/mi
+  @charset_rules ~r/^\s*@charset .*;$/mi
   @font_face ~r/@font-face\s*{[\s\S]+?}/mi
 
   @doc """
@@ -123,6 +124,7 @@ defmodule Premailex.CSSParser do
     string
     |> String.replace(@font_face, "")
     |> String.replace(@media_queries, "")
+    |> String.replace(@charset_rules, "")
     |> String.replace(@comments, "")
   end
 
