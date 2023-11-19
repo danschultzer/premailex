@@ -13,8 +13,8 @@ jobs:
       matrix:
         html_parser: [floki, meeseeks]
         version:
-          - otp: 25.0
-            elixir: 1.14
+          - otp: 26.0
+            elixir: 1.15
             os: ubuntu-latest
           - otp: 23.0
             elixir: 1.11
