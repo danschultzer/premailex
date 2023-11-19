@@ -102,12 +102,14 @@ defmodule Premailex.HTMLInlineStyles do
     CSSParser.parse(body)
   end
   defp parse_body({:ok, %{status: status}}, _http_adapter, url) do
-    Logger.warn("Ignoring #{url} styles because received unexpected HTTP status: #{status}")
+    Logger.warning("Ignoring #{url} styles because received unexpected HTTP status: #{status}")
 
     nil
   end
   defp parse_body({:error, error}, http_adapter, url) do
-    Logger.warn("Ignoring #{url} styles because of unexpected error from #{inspect http_adapter}:\n\n#{inspect error}")
+    Logger.warning(
+      "Ignoring #{url} styles because of unexpected error from #{inspect(http_adapter)}:\n\n#{inspect(error)}"
+    )
 
     nil
   end

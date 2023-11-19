@@ -31,7 +31,7 @@ defmodule Premailex.HTMLParser.Meeseeks do
     |> Enum.map(&Meeseeks.tree/1)
   rescue
     e in Meeseeks.Error ->
-      Logger.warn("Meeseeks error: " <> inspect(e))
+      Logger.warning("Meeseeks error: " <> inspect(e))
       []
   end
 
