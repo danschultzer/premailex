@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.19 (TBA)
+## v0.3.19 (2023-11-19)
 
 * Ignore `@charset` CSS at-rule
 
