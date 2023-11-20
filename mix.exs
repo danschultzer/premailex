@@ -10,7 +10,16 @@ defmodule Premailex.Mixfile do
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      xref: [exclude: [:certifi, :httpc, Meeseeks, Meeseeks.Document, Meeseeks.Selector.CSS, :ssl_verify_hostname]],
+      xref: [
+        exclude: [
+          :certifi,
+          :httpc,
+          Meeseeks,
+          Meeseeks.Document,
+          Meeseeks.Selector.CSS,
+          :ssl_verify_hostname
+        ]
+      ],
 
       # Hex
       description: "Add inline styling to your HTML emails, and transform them to text",
@@ -31,13 +40,12 @@ defmodule Premailex.Mixfile do
   defp deps do
     [
       {:floki, "~> 0.19"},
-
       {:meeseeks, "~> 0.11", optional: true},
       {:certifi, ">= 0.0.0", optional: true},
       {:ssl_verify_fun, ">= 0.0.0", optional: true},
-
-      {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
+      # Development and test
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
+      {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
       {:test_server, "~> 0.1.5", only: [:test]}
     ]
   end

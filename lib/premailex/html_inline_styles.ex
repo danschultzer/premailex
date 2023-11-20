@@ -16,26 +16,34 @@ defmodule Premailex.HTMLInlineStyles do
       * `:all` - apply all optimization steps
       * `:remove_style_tags` - Remove style tags (can be combined in a list)
   """
-  @spec process(String.t() | HTMLParser.html_tree(), [CSSParser.rule_set()] | nil, Keyword.t() | nil) :: String.t()
+  @spec process(
+          String.t() | HTMLParser.html_tree(),
+          [CSSParser.rule_set()] | nil,
+          Keyword.t() | nil
+        ) :: String.t()
   def process(html_or_html_tree, css_rule_sets_or_options \\ nil, options \\ nil)
+
   def process(html, css_rule_sets_or_options, options) when is_binary(html) do
     html
     |> HTMLParser.parse()
     |> process(css_rule_sets_or_options, options)
   end
+
   def process(html_tree, css_rule_sets_or_options, nil) do
     case Keyword.keyword?(css_rule_sets_or_options) do
-      true  -> process(html_tree, nil, css_rule_sets_or_options)
+      true -> process(html_tree, nil, css_rule_sets_or_options)
       false -> process(html_tree, css_rule_sets_or_options, [])
     end
   end
+
   def process(html_tree, nil, options) do
-    css_selector  = Keyword.get(options, :css_selector, "style,link[rel=\"stylesheet\"][href]")
+    css_selector = Keyword.get(options, :css_selector, "style,link[rel=\"stylesheet\"][href]")
     css_rule_sets = load_styles(html_tree, css_selector)
-    options       = Keyword.put_new(options, :css_selector, css_selector)
+    options = Keyword.put_new(options, :css_selector, css_selector)
 
     process(html_tree, css_rule_sets, options)
   end
+
   def process(html_tree, css_rules_sets, options) do
     optimize_steps = Keyword.get(options, :optimize, :none)
     optimize_options = Keyword.take(options, [:css_selector])
@@ -67,16 +75,17 @@ defmodule Premailex.HTMLInlineStyles do
       end)
 
     visible_html_tree =
-      Enum.reduce(hidden_elements, html_tree, fn {_index, hidden_element, placeholder}, html_tree ->
+      Enum.reduce(hidden_elements, html_tree, fn {_index, hidden_element, placeholder},
+                                                 html_tree ->
         Util.traverse_until_first(html_tree, hidden_element, fn _element -> placeholder end)
       end)
 
     styles
     |> Enum.reduce(visible_html_tree, &add_rule_set_to_html(&1, &2))
     |> Util.traverse("premailex", fn {"premailex", attrs, _children} ->
-      {"data-index", index} = Enum.find(attrs, & elem(&1, 0) == "data-index")
+      {"data-index", index} = Enum.find(attrs, &(elem(&1, 0) == "data-index"))
 
-      {_index, hidden_element, _replacement} = Enum.find(hidden_elements, & elem(&1, 0) == index)
+      {_index, hidden_element, _replacement} = Enum.find(hidden_elements, &(elem(&1, 0) == index))
 
       hidden_element
     end)
@@ -98,14 +107,17 @@ defmodule Premailex.HTMLInlineStyles do
     |> parse_body(http_adapter, url)
   end
 
-  defp parse_body({:ok, %{status: status, body: body}}, _http_adapter, _url) when status in 200..399 do
+  defp parse_body({:ok, %{status: status, body: body}}, _http_adapter, _url)
+       when status in 200..399 do
     CSSParser.parse(body)
   end
+
   defp parse_body({:ok, %{status: status}}, _http_adapter, url) do
     Logger.warning("Ignoring #{url} styles because received unexpected HTTP status: #{status}")
 
     nil
   end
+
   defp parse_body({:error, error}, http_adapter, url) do
     Logger.warning(
       "Ignoring #{url} styles because of unexpected error from #{inspect(http_adapter)}:\n\n#{inspect(error)}"
@@ -173,7 +185,7 @@ defmodule Premailex.HTMLInlineStyles do
       |> CSSParser.merge()
       |> CSSParser.to_string()
       |> case do
-        ""    -> current_style
+        "" -> current_style
         style -> style
       end
 
@@ -194,6 +206,7 @@ defmodule Premailex.HTMLInlineStyles do
   end
 
   defp maybe_remove_style_tags(tree, _steps, nil), do: tree
+
   defp maybe_remove_style_tags(tree, steps, css_selector) do
     case Enum.member?(steps, :remove_style_tags) do
       true -> HTMLParser.filter(tree, css_selector)
@@ -212,7 +225,7 @@ defmodule Premailex.HTMLInlineStyles do
   defp http_adapter do
     case Application.get_env(:premailex, :http_adapter, Premailex.HTTPAdapter.Httpc) do
       {adapter, opts} -> {adapter, opts}
-      adapter         -> {adapter, nil}
+      adapter -> {adapter, nil}
     end
   end
 end

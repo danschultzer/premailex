@@ -5,11 +5,11 @@ defmodule Premailex.HTTPAdapter do
     @moduledoc false
 
     @type header :: {binary(), binary()}
-    @type t      :: %__MODULE__{
-      status: integer(),
-      headers: [header()],
-      body: binary()
-    }
+    @type t :: %__MODULE__{
+            status: integer(),
+            headers: [header()],
+            body: binary()
+          }
 
     defstruct status: 200, headers: [], body: ""
   end
@@ -18,7 +18,8 @@ defmodule Premailex.HTTPAdapter do
   @type body :: binary() | nil
   @type headers :: [{binary(), binary()}]
 
-  @callback request(method(), binary(), body(), headers(), Keyword.t()) :: {:ok, map()} | {:error, any()}
+  @callback request(method(), binary(), body(), headers(), Keyword.t()) ::
+              {:ok, map()} | {:error, any()}
 
   @spec user_agent_header() :: {binary(), binary()}
   def user_agent_header do

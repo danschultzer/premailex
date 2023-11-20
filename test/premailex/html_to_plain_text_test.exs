@@ -167,8 +167,10 @@ defmodule Premailex.HTMLToPlainTextTest do
   defp add_attribute(elements, key, value) when is_list(elements) do
     Enum.map(elements, &add_attribute(&1, key, value))
   end
+
   defp add_attribute({tag, attrs, children}, key, value) do
     {tag, attrs ++ [{key, value}], add_attribute(children, key, value)}
   end
+
   defp add_attribute(other, _key, _value), do: other
 end
