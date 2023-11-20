@@ -1,13 +1,27 @@
 name: CI
 
 on:
-  push:
+  push: 
+    branches: [ main ]
   pull_request:
-  release:
-    types:
-      - published
+  workflow_call:
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Linter
+    env:
+      MIX_ENV: test
+    steps:
+      - uses: actions/checkout@v3
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: 26.0
+          elixir-version: 1.15
+      - run: mix deps.get
+      - run: mix compile --warnings-as-errors
+      - run: mix credo --strict
+
   test:
     strategy:
       matrix:
@@ -24,6 +38,9 @@ jobs:
 
     runs-on: ${{ matrix.version.os }}
     name: OTP ${{matrix.version.otp}} / Elixir ${{matrix.version.elixir}} / ${{matrix.html_parser}}
+    env:
+      MIX_ENV: test
+      HTML_PARSER: ${{matrix.html_parser}}
     steps:
       - uses: actions/checkout@v2
       - uses: erlef/setup-beam@v1
@@ -31,21 +48,5 @@ jobs:
           otp-version: ${{matrix.version.otp}}
           elixir-version: ${{matrix.version.elixir}}
       - run: mix deps.get
-      - run: MIX_ENV=test mix compile
-      - run: HTML_PARSER=${{matrix.html_parser}} mix test
-      - run: MIX_ENV=test mix credo --strict
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.event_name == 'release' && github.event.action == 'published'
-    name: Deploy published release
-    env:
-      HEX_API_KEY: ${{secrets.HEX_API_KEY}}
-    steps:
-      - uses: actions/checkout@v2
-      - uses: erlef/setup-beam@v1
-        with:
-          otp-version: 25.0
-          elixir-version: 1.14
-      - run: mix deps.get
-      - run: mix hex.publish --yes
+      - run: mix compile --warnings-as-errors
+      - run: mix test
