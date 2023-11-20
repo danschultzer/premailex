@@ -100,7 +100,10 @@ defmodule Premailex.HTMLInlineStylesTest do
           @input
 
         _ ->
-          TestServer.add("/styles.css", to: fn conn -> Plug.Conn.send_resp(conn, 200, @css_link_content) end)
+          TestServer.add("/styles.css",
+            to: fn conn -> Plug.Conn.send_resp(conn, 200, @css_link_content) end
+          )
+
           String.replace(@input, "http://localhost", TestServer.url())
       end
 
@@ -134,14 +137,20 @@ defmodule Premailex.HTMLInlineStylesTest do
 
     refute parsed =~ "This is a comment"
 
-    assert parsed =~ ~r/(#{Regex.escape("<!--[if (gte mso 9)|(IE)]>")})|(#{Regex.escape("<!-- [if (gte mso 9)|(IE)]>")})/
+    assert parsed =~
+             ~r/(#{Regex.escape("<!--[if (gte mso 9)|(IE)]>")})|(#{Regex.escape("<!-- [if (gte mso 9)|(IE)]>")})/
+
     assert parsed =~ "<p>Downlevel-hidden comment</p>"
     assert parsed =~ ~r/(#{Regex.escape("<![endif]-->")})|(#{Regex.escape("<![endif] -->")})/
 
-    assert parsed =~ ~r/(#{Regex.escape("<!--[if !mso]><!-- -->")})|(#{Regex.escape("<!-- [if !mso]><!--  -->")})/
     assert parsed =~
-            "<p style=\"background-color: #000; color: #000 !important; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; line-height: 22px; margin: 0; padding: 0;\">Downlevel-revealed comment</p>"
-    assert parsed =~ ~r/(#{Regex.escape("<!--<![endif]-->")})|(#{Regex.escape("<!-- <![endif] -->")})/
+             ~r/(#{Regex.escape("<!--[if !mso]><!-- -->")})|(#{Regex.escape("<!-- [if !mso]><!--  -->")})/
+
+    assert parsed =~
+             "<p style=\"background-color: #000; color: #000 !important; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; line-height: 22px; margin: 0; padding: 0;\">Downlevel-revealed comment</p>"
+
+    assert parsed =~
+             ~r/(#{Regex.escape("<!--<![endif]-->")})|(#{Regex.escape("<!-- <![endif] -->")})/
 
     assert parsed =~ "<div class=\"match-order-test-1 same-match\" style=\"color: yellow;\">"
     assert parsed =~ "<div class=\"match-order-test-2 same-match\" style=\"color: yellow;\">"
@@ -152,8 +161,10 @@ defmodule Premailex.HTMLInlineStylesTest do
   @tag test_server: false
   test "process/3 when styles can't be loaded due to no network", %{input: input} do
     assert CaptureLog.capture_log(fn ->
-      refute Premailex.HTMLInlineStyles.process(input) =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
-    end) =~ "Ignoring http://localhost/styles.css styles because of unexpected error from Premailex.HTTPAdapter.Httpc:"
+             refute Premailex.HTMLInlineStyles.process(input) =~
+                      "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
+           end) =~
+             "Ignoring http://localhost/styles.css styles because of unexpected error from Premailex.HTTPAdapter.Httpc:"
   end
 
   @tag test_server: false
@@ -162,8 +173,10 @@ defmodule Premailex.HTMLInlineStylesTest do
     input = String.replace(input, "http://localhost", TestServer.url())
 
     assert CaptureLog.capture_log(fn ->
-      refute Premailex.HTMLInlineStyles.process(input) =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
-    end) =~ "Ignoring #{TestServer.url()}/styles.css styles because received unexpected HTTP status: 404"
+             refute Premailex.HTMLInlineStyles.process(input) =~
+                      "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
+           end) =~
+             "Ignoring #{TestServer.url()}/styles.css styles because received unexpected HTTP status: 404"
   end
 
   @tag test_server: false
@@ -172,14 +185,18 @@ defmodule Premailex.HTMLInlineStylesTest do
     input = String.replace(input, "http://localhost", TestServer.url())
 
     assert CaptureLog.capture_log(fn ->
-      refute Premailex.HTMLInlineStyles.process(input) =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
-    end) =~ ":unknown_ca"
+             refute Premailex.HTMLInlineStyles.process(input) =~
+                      "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
+           end) =~ ":unknown_ca"
   end
 
-  @tag test_server: :false
+  @tag test_server: false
   test "process/3 when styles loads on SSL", %{input: input} do
     TestServer.start(scheme: :https)
-    TestServer.add("/styles.css", to: fn conn -> Plug.Conn.send_resp(conn, 200, @css_link_content) end)
+
+    TestServer.add("/styles.css",
+      to: fn conn -> Plug.Conn.send_resp(conn, 200, @css_link_content) end
+    )
 
     on_exit(fn ->
       Application.delete_env(:premailex, :http_adapter)
@@ -190,7 +207,7 @@ defmodule Premailex.HTMLInlineStylesTest do
         verify: :verify_peer,
         depth: 99,
         cacerts: TestServer.x509_suite().cacerts,
-        verify_fun: {&:ssl_verify_hostname.verify_fun/3, check_hostname: 'localhost'}
+        verify_fun: {&:ssl_verify_hostname.verify_fun/3, check_hostname: ~c"localhost"}
       ]
 
     Application.put_env(:premailex, :http_adapter, {Premailex.HTTPAdapter.Httpc, [ssl: ssl_opts]})
@@ -251,17 +268,21 @@ defmodule Premailex.HTMLInlineStylesTest do
     assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
     assert parsed =~ "<style>"
     assert parsed =~ "<link href"
-    assert parsed =~ "<body style=\"color: #333333; font-family: Arial, sans-serif; font-size: 14px; line-height: 22px;\">"
+
+    assert parsed =~
+             "<body style=\"color: #333333; font-family: Arial, sans-serif; font-size: 14px; line-height: 22px;\">"
   end
 
   test "process/3 accepts html tree as first argument and options as second", %{input: input} do
     html_tree = Premailex.HTMLParser.parse(input)
-    parsed = Premailex.HTMLInlineStyles.process(html_tree, [optimize: :all])
+    parsed = Premailex.HTMLInlineStyles.process(html_tree, optimize: :all)
 
     assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
     refute parsed =~ "<style>"
     refute parsed =~ "<link href"
-    assert parsed =~ "<body style=\"color: #333333; font-family: Arial, sans-serif; font-size: 14px; line-height: 22px;\">"
+
+    assert parsed =~
+             "<body style=\"color: #333333; font-family: Arial, sans-serif; font-size: 14px; line-height: 22px;\">"
   end
 
   @tag test_server: false
