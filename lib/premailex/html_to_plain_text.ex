@@ -206,10 +206,10 @@ defmodule Premailex.HTMLToPlainText do
     list = Enum.map(list, &clear_whitespace(&1))
 
     list
-    |> Enum.all?(&is_inline_element?/1)
+    |> Enum.all?(&inline_element?/1)
     |> case do
       true -> list
-      false -> Enum.reject(list, &is_empty?/1)
+      false -> Enum.reject(list, &empty?/1)
     end
   end
 
@@ -219,11 +219,11 @@ defmodule Premailex.HTMLToPlainText do
 
   defp clear_whitespace(any), do: any
 
-  defp is_empty?(text) when is_binary(text) do
+  defp empty?(text) when is_binary(text) do
     String.trim(text) == ""
   end
 
-  defp is_empty?(_any), do: false
+  defp empty?(_any), do: false
 
   @inline_elements [
     "a",
@@ -260,10 +260,10 @@ defmodule Premailex.HTMLToPlainText do
     "var"
   ]
 
-  defp is_inline_element?({element, _attrs, _children})
+  defp inline_element?({element, _attrs, _children})
        when element in @inline_elements,
        do: true
 
-  defp is_inline_element?({_element, _attrs, _children}), do: false
-  defp is_inline_element?(_any), do: true
+  defp inline_element?({_element, _attrs, _children}), do: false
+  defp inline_element?(_any), do: true
 end
