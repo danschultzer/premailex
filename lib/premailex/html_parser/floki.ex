@@ -49,6 +49,13 @@ defmodule Premailex.HTMLParser.Floki do
 
   @impl true
   @doc false
+  def text(tree) when is_binary(tree) do
+    case Floki.parse_document(tree) do
+      {:ok, document} -> Floki.text(document)
+      error -> error
+    end
+  end
+
   def text(tree), do: Floki.text(tree)
 
   # """
