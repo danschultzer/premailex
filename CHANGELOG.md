@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.20 (TBA)
+
+* Require Elixir 1.13
+
 ## v0.3.19 (2023-11-19)
 
 * Ignore `@charset` CSS at-rule
