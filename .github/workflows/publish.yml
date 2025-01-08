@@ -20,6 +20,6 @@ jobs:
       - uses: erlef/setup-beam@v1
         with:
           otp-version: 27.0
-          elixir-version: 1.17
+          elixir-version: 1.18
       - run: mix deps.get
       - run: mix hex.publish --yes
