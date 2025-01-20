@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.20 (TBA)
+## v0.3.20 (2025-01-20)
 
 * Require Elixir 1.13
 * `Premailex.CSSParser.parse/1` now ignores empty selectors
