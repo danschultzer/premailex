@@ -2,6 +2,7 @@ defmodule Premailex.CSSParser do
   @moduledoc """
   Module that handles CSS parsing with naive Regular Expression.
   """
+  require Logger
 
   @type rule :: %{directive: String.t(), value: String.t(), important?: boolean}
   @type rule_set :: %{rules: [rule], selector: String.t(), specificity: number}
@@ -65,12 +66,27 @@ defmodule Premailex.CSSParser do
     selector
     # Ignore escaped commas
     |> String.split(~r/(?<!\\),/)
+    |> normalize_selectors(selector)
     |> Enum.map(&parse_selector_rules(&1, rules))
+  end
+
+  defp normalize_selectors(selectors, original) do
+    Enum.reduce(selectors, [], fn selector, acc ->
+      case String.trim(selector) do
+        "" ->
+          Logger.debug("Empty selector found in #{inspect(String.trim(original))}. Ignoring.")
+
+          acc
+
+        selector ->
+          acc ++ [selector]
+      end
+    end)
   end
 
   defp parse_selector_rules(selector, rules) do
     %{
-      selector: String.trim(selector),
+      selector: selector,
       rules: parse_rules(rules),
       specificity: calculate_specificity(selector)
     }

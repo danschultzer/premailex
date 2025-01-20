@@ -3,6 +3,7 @@
 ## v0.3.20 (TBA)
 
 * Require Elixir 1.13
+* `Premailex.CSSParser.parse/1` now ignores empty selectors
 
 ## v0.3.19 (2023-11-19)
 
