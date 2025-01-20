@@ -12,6 +12,7 @@ defmodule Premailex.HTMLInlineStylesTest do
 
   h1, h2, h3, h4, p {margin: 0; padding: 0;}
   p:first-of-type {font-size:16px;font-weight:bold;}
+  .invalid-empty-selector, {}
   """
 
   @css_inline_content """

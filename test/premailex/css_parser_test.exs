@@ -2,6 +2,8 @@ defmodule Premailex.CSSParserTest do
   use ExUnit.Case
   doctest Premailex.CSSParser
 
+  alias ExUnit.CaptureLog
+
   @input """
   body, table {/* text-decoration:underline */background-color:#ffffff;background-image:url('http://example.com/image.png');color:#000000;}
   div p > a:hover {color:#000000 !important;text-decoration:underline}
@@ -19,6 +21,7 @@ defmodule Premailex.CSSParserTest do
          url("/fonts/OpenSans-Regular-webfont.woff") format("woff");
   }
   .with\\,escaped\\,commas {}
+  .with-empty-selector, {}
   """
 
   @parsed [
@@ -60,10 +63,17 @@ defmodule Premailex.CSSParserTest do
       rules: [],
       selector: ".with\\,escaped\\,commas",
       specificity: 1
+    },
+    %{
+      rules: [],
+      selector: ".with-empty-selector",
+      specificity: 1
     }
   ]
 
   test "parse/1" do
-    assert Premailex.CSSParser.parse(@input) == @parsed
+    assert CaptureLog.capture_log(fn ->
+             assert Premailex.CSSParser.parse(@input) == @parsed
+           end) =~ "Empty selector found in \".with-empty-selector,\". Ignoring."
   end
 end
