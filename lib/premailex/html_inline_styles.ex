@@ -6,6 +6,9 @@ defmodule Premailex.HTMLInlineStyles do
 
   alias Premailex.{CSSParser, HTMLParser, Util}
 
+  @type html_or_html_tree() :: String.t() | HTMLParser.html_tree()
+  @type css_rule_sets() :: [CSSParser.rule_set()]
+
   @doc """
   Processes an HTML string adding inline styles.
 
@@ -16,11 +19,10 @@ defmodule Premailex.HTMLInlineStyles do
       * `:all` - apply all optimization steps
       * `:remove_style_tags` - Remove style tags (can be combined in a list)
   """
-  @spec process(
-          String.t() | HTMLParser.html_tree(),
-          [CSSParser.rule_set()] | nil,
-          Keyword.t() | nil
-        ) :: String.t()
+  @spec process(html_or_html_tree()) :: String.t()
+  @spec process(html_or_html_tree(), css_rule_sets() | keyword() | nil) :: String.t()
+  @spec process(html_or_html_tree(), keyword(), nil) :: String.t()
+  @spec process(html_or_html_tree(), css_rule_sets() | nil, keyword() | nil) :: String.t()
   def process(html_or_html_tree, css_rule_sets_or_options \\ nil, options \\ nil)
 
   def process(html, css_rule_sets_or_options, options) when is_binary(html) do
