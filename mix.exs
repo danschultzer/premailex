@@ -17,6 +17,7 @@ defmodule Premailex.Mixfile do
           Meeseeks,
           Meeseeks.Document,
           Meeseeks.Selector.CSS,
+          LazyHTML,
           :ssl_verify_hostname
         ]
       ],
@@ -39,8 +40,9 @@ defmodule Premailex.Mixfile do
 
   defp deps do
     [
-      {:floki, "~> 0.19"},
+      {:floki, "~> 0.19", optional: true},
       {:meeseeks, "~> 0.11", optional: true},
+      {:lazy_html, "~> 0.1.8", optional: true},
       {:certifi, ">= 0.0.0", optional: true},
       {:ssl_verify_fun, ">= 0.0.0", optional: true},
 
