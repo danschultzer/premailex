@@ -3,8 +3,8 @@ defmodule Premailex.HTMLParser.Meeseeks do
 
   require Logger
 
-  alias Premailex.HTMLParser
   alias Meeseeks.{Document, Selector.CSS}
+  alias Premailex.HTMLParser
 
   @behaviour HTMLParser
 

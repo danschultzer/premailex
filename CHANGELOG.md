@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+Requires Elixir 1.14 or higher.
+
 ## v0.3.20 (2025-01-20)
 
 * Require Elixir 1.13

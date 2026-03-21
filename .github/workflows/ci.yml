@@ -16,8 +16,8 @@ jobs:
       - uses: actions/checkout@v3
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: 27.0
-          elixir-version: 1.18
+          otp-version: 28.0
+          elixir-version: 1.19
       - uses: actions/cache@v4
         env:
           cache-name: ${{ github.event.repository.name }}-plt
@@ -37,14 +37,12 @@ jobs:
       matrix:
         html_parser: [floki, meeseeks]
         version:
-          - otp: 27.0
-            elixir: 1.18
+          - otp: 28.0
+            elixir: 1.19
             os: ubuntu-latest
-          - otp: 23.0
-            elixir: 1.13
-            # It's necessary to run on ubuntu 20.04 for OTP 20 - 23
-            # See https://github.com/erlef/setup-beam
-            os: ubuntu-20.04
+          - otp: 24.0
+            elixir: 1.14
+            os: ubuntu-latest
 
     runs-on: ${{ matrix.version.os }}
     name: OTP ${{matrix.version.otp}} / Elixir ${{matrix.version.elixir}} / ${{matrix.html_parser}}
