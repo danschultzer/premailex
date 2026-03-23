@@ -5,6 +5,7 @@
 Requires Elixir 1.14 or higher.
 
 * Fixed compiler warnings in `Premailex.HTMLParser.Meeseeks`
+* Fixed invalid spec in `Premailex.HTMLInlineStyles.process/3`
 
 ## v0.3.20 (2025-01-20)
 
