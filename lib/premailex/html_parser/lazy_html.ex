@@ -1,108 +1,124 @@
-defmodule Premailex.HTMLParser.LazyHTML do
-  @moduledoc false
+if Code.ensure_loaded?(LazyHTML) do
+  defmodule Premailex.HTMLParser.LazyHTML do
+    @moduledoc false
 
-  @behaviour Premailex.HTMLParser
+    @behaviour Premailex.HTMLParser
 
-  @impl true
-  @doc false
-  def parse(html) do
-    is_document = Regex.match?(~r/<html|<HTML|<!DOCTYPE/i, html)
-
-    result =
-      if is_document do
-        html
-        |> LazyHTML.from_document()
-        |> LazyHTML.to_tree(skip_whitespace_nodes: true)
-      else
-        html
-        |> LazyHTML.from_fragment()
-        |> LazyHTML.to_tree(skip_whitespace_nodes: true)
+    @impl true
+    @doc false
+    def parse(html) do
+      ~r/<html/i
+      |> Regex.match?(html)
+      |> case do
+        true -> LazyHTML.from_document(html)
+        false -> LazyHTML.from_fragment(html)
       end
-      |> Enum.reject(&empty_text_node?/1)
-
-    case result do
-      [html] -> html
-      html when is_list(html) -> html
-      html -> html
+      |> LazyHTML.to_tree()
+      |> case do
+        [tree] -> tree
+        tree -> tree
+      end
     end
-  end
 
-  @impl true
-  @doc false
-  def all(tree, selector) do
-    tree
-    |> to_lazy_html()
-    |> LazyHTML.query(selector)
-    |> LazyHTML.to_tree(skip_whitespace_nodes: true)
-  end
-
-  @impl true
-  @doc false
-  def filter(tree, selector) do
-    tree_list = normalize_tree(tree)
-
-    filter_tree(tree_list, selector)
-  end
-
-  @impl true
-  @doc false
-  def to_string(tree) do
-    tree
-    |> to_lazy_html()
-    |> LazyHTML.to_html(skip_whitespace_nodes: true)
-  end
-
-  @impl true
-  @doc false
-  def text(tree) do
-    tree
-    |> to_lazy_html()
-    |> LazyHTML.text()
-  end
-
-  defp to_lazy_html(tree) when is_list(tree) do
-    LazyHTML.from_tree(tree)
-  end
-
-  defp to_lazy_html(tree) when is_tuple(tree) do
-    LazyHTML.from_tree([tree])
-  end
-
-  defp normalize_tree(tree) when is_list(tree), do: tree
-  defp normalize_tree(tree) when is_tuple(tree), do: [tree]
-
-  defp filter_tree(tree_list, selector) when is_list(tree_list) do
-    tree_list
-    |> Enum.map(fn node -> filter_node(node, selector) end)
-    |> Enum.reject(fn node -> is_nil(node) or empty_text_node?(node) end)
-  end
-
-  defp empty_text_node?(""), do: true
-  defp empty_text_node?(text) when is_binary(text), do: String.trim(text) == ""
-  defp empty_text_node?(_), do: false
-
-  defp filter_node(node, selector) when is_tuple(node) do
-    {tag, attrs, children} = node
-
-    node_without_children = {tag, attrs, []}
-    lazy_html = LazyHTML.from_tree([node_without_children])
-    matches = LazyHTML.query(lazy_html, selector)
-
-    node_matches = LazyHTML.to_tree(matches) != []
-
-    if node_matches do
-      nil
-    else
-      filtered_children = filter_tree(children, selector)
-      {tag, attrs, filtered_children}
+    @impl true
+    @doc false
+    def all(tree, selector) do
+      tree
+      |> from_tree()
+      |> LazyHTML.query(selector)
+      |> LazyHTML.to_tree()
     end
-  end
 
-  defp filter_node(node, _selector) when is_binary(node) do
-    node
-  end
+    defp from_tree(tree) do
+      tree
+      |> List.wrap()
+      |> LazyHTML.from_tree()
+    end
 
-  defp filter_node({:comment, _text} = node, _selector) do
-    node
+    @impl true
+    @doc false
+    def filter(tree, selector) do
+      tree = with_premailex_ids(tree)
+
+      tree
+      |> List.wrap()
+      |> LazyHTML.from_tree()
+      |> LazyHTML.query(selector)
+      |> LazyHTML.to_tree()
+      |> then(fn filter_nodes ->
+        filter_tree(tree, filter_nodes)
+      end)
+    end
+
+    @premailex_id_attr "data-premailex-id"
+
+    defp with_premailex_ids(tree) do
+      {tree, _index} = with_premailex_ids(tree, 0)
+
+      tree
+    end
+
+    defp with_premailex_ids(nodes, index) when is_list(nodes) do
+      Enum.map_reduce(nodes, index, &with_premailex_ids/2)
+    end
+
+    defp with_premailex_ids({tag, attrs, children}, index) do
+      {tagged_children, next_index} = with_premailex_ids(children, index + 1)
+
+      tagged_node =
+        {tag, [{@premailex_id_attr, Integer.to_string(index)} | attrs], tagged_children}
+
+      {tagged_node, next_index}
+    end
+
+    defp with_premailex_ids(node, index), do: {node, index}
+
+    defp filter_tree(nodes, filter_nodes) when is_list(nodes) do
+      nodes
+      |> Enum.reduce([], fn node, acc ->
+        case node in filter_nodes do
+          true -> drop_whitespace(acc)
+          false -> [filter_tree(node, filter_nodes) | acc]
+        end
+      end)
+      |> Enum.reverse()
+    end
+
+    defp filter_tree({tag, attrs, children}, filter_nodes) do
+      {
+        tag,
+        Enum.reject(attrs, fn {name, _value} -> name == @premailex_id_attr end),
+        filter_tree(children, filter_nodes)
+      }
+    end
+
+    defp filter_tree(node, _filter_nodes), do: node
+
+    defp drop_whitespace([]), do: []
+
+    defp drop_whitespace(["\n" <> _ = previous | rest]) do
+      case String.trim(previous) == "" do
+        true -> rest
+        false -> [previous | rest]
+      end
+    end
+
+    defp drop_whitespace(nodes), do: nodes
+
+    @impl true
+    @doc false
+    def to_string(tree) do
+      tree
+      |> from_tree()
+      |> LazyHTML.to_html()
+    end
+
+    @impl true
+    @doc false
+    def text(tree) do
+      tree
+      |> from_tree()
+      |> LazyHTML.text()
+    end
   end
 end

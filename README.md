@@ -89,22 +89,15 @@ end
 
 ## HTML parser
 
-Premailex supports multiple HTML parsers and will automatically select one based on what's available:
-
-1. [`Floki`](https://github.com/philss/floki) (default if available)
-2. [`Meeseeks`](https://github.com/mischov/meeseeks)
-3. [`LazyHTML`](https://github.com/wojtekmach/lazy_html)
-
-**At least one parser dependency must be added to your `mix.exs`:**
+Premailex supports [`Floki`](https://github.com/philss/floki), [`LazyHTML`](https://github.com/wojtekmach/lazy_html), [`Meeseeks`](https://github.com/mischov/meeseeks) and will automatically use the first one available based on the dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
     {:premailex, "~> 0.3.20"},
-    # Add at least one of these:
-    {:floki, "~> 0.19"},           # Recommended default
-    # {:meeseeks, "~> 0.11"},      # Alternative option
-    # {:lazy_html, "~> 0.1.8"},    # Alternative option
+    {:floki, "~> 0.19"},
+    # {:lazy_html, "~> 0.1.11"},
+    # {:meeseeks, "~> 0.11"},
   ]
 end
 ```

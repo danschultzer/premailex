@@ -1,12 +1,8 @@
 ExUnit.start()
 
-cond do
-  System.get_env("HTML_PARSER") == "meeseeks" ->
-    Application.put_env(:premailex, :html_parser, Premailex.HTMLParser.Meeseeks)
+html_parser = System.get_env("HTML_PARSER", "Floki")
+html_parser = Module.concat(Premailex.HTMLParser, html_parser)
 
-  System.get_env("HTML_PARSER") == "lazy_html" ->
-    Application.put_env(:premailex, :html_parser, Premailex.HTMLParser.LazyHTML)
+Application.put_env(:premailex, :html_parser, html_parser)
 
-  true ->
-    :ok
-end
+IO.puts("Testing with #{inspect(html_parser)}")

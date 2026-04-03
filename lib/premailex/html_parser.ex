@@ -2,23 +2,13 @@ defmodule Premailex.HTMLParser do
   @moduledoc """
   Module that provide HTML parsing API using an underlying HTML parser library.
 
-  By default, premailex will try to use Floki, then Meeseeks, then LazyHTML
-  (in that order) based on what's available. You can also explicitly configure
-  which parser to use in your config:
+  By default, premailex will try to use Floki, then LazyHTML, then Meeseeks
+  (in that order) based on what's available.
+
+  You can explicitly configure which parser to use in your config:
 
       config :premailex, html_parser: Premailex.HTMLParser.LazyHTML
-
-  At least one HTML parser dependency must be available:
-  - `{:floki, "~> 0.19"}` (default if available)
-  - `{:meeseeks, "~> 0.11"}`
-  - `{:lazy_html, "~> 0.1.8"}`
   """
-
-  @parsers_in_order [
-    Premailex.HTMLParser.Floki,
-    Premailex.HTMLParser.Meeseeks,
-    Premailex.HTMLParser.LazyHTML
-  ]
 
   @type html_tree :: tuple() | list()
   @type selector :: binary()
@@ -38,7 +28,39 @@ defmodule Premailex.HTMLParser do
       {"html", [], [{"head", [], []}, {"body", [], [{"h1", [], ["Title"]}]}]}
   """
   @spec parse(binary()) :: html_tree()
-  def parse(html), do: parser().parse(html)
+  def parse(html), do: html_parser().parse(html)
+
+  defp html_parser do
+    case Application.get_env(:premailex, :html_parser) || default_html_parser!() do
+      mod when is_atom(mod) -> mod
+      other -> raise "Invalid html_parser, got: #{inspect(other)}"
+    end
+  end
+
+  defp default_html_parser! do
+    cond do
+      Code.ensure_loaded?(Floki) ->
+        Premailex.HTMLParser.Floki
+
+      Code.ensure_loaded?(LazyHTML) ->
+        Premailex.HTMLParser.LazyHTML
+
+      Code.ensure_loaded?(Meeseeks) ->
+        Premailex.HTMLParser.Meeseeks
+
+      true ->
+        raise """
+        No HTML parser is available. Please add at least one of the following dependencies to your mix.exs:
+
+        - {:floki, "~> 0.19"}
+        - {:lazy_html, "~> 0.1.11"}
+        - {:meeseeks, "~> 0.11"}
+
+        Or explicitly configure a parser:
+        config :premailex, html_parser: Premailex.HTMLParser.Floki
+        """
+    end
+  end
 
   @doc """
   Searches an HTML tree for the selector.
@@ -49,7 +71,7 @@ defmodule Premailex.HTMLParser do
       [{"h1", [], ["Title"]}]
   """
   @spec all(html_tree(), selector()) :: [html_tree()]
-  def all(tree, selector), do: parser().all(tree, selector)
+  def all(tree, selector), do: html_parser().all(tree, selector)
 
   @doc """
   Filters elements matching the selector from the HTML tree.
@@ -60,7 +82,7 @@ defmodule Premailex.HTMLParser do
       [{"html", [], [{"head", [], []}, {"body", [], []}]}]
   """
   @spec filter(html_tree(), selector()) :: [html_tree()]
-  def filter(tree, selector), do: parser().filter(tree, selector)
+  def filter(tree, selector), do: html_parser().filter(tree, selector)
 
   @doc """
   Turns an HTML tree into a string.
@@ -71,7 +93,7 @@ defmodule Premailex.HTMLParser do
       "<html><head></head><body><h1>Title</h1></body></html>"
   """
   @spec to_string(html_tree()) :: binary()
-  def to_string(tree), do: parser().to_string(tree)
+  def to_string(tree), do: html_parser().to_string(tree)
 
   @doc """
   Extracts text elements from the HTML tree.
@@ -82,66 +104,5 @@ defmodule Premailex.HTMLParser do
       "Title"
   """
   @spec text(html_tree()) :: binary()
-  def text(tree), do: parser().text(tree)
-
-  defp parser do
-    case Application.get_env(:premailex, :html_parser) do
-      nil ->
-        # No explicit config, try to find an available parser
-        find_available_parser()
-
-      configured_parser ->
-        # User explicitly configured a parser, verify it's available
-        if parser_available?(configured_parser) do
-          configured_parser
-        else
-          raise """
-          The configured HTML parser #{inspect(configured_parser)} is not available.
-
-          Please ensure the corresponding dependency is added to your mix.exs:
-          - For Floki: {:floki, "~> 0.19"}
-          - For Meeseeks: {:meeseeks, "~> 0.11"}
-          - For LazyHTML: {:lazy_html, "~> 0.1.8"}
-
-          Or configure a different parser in your config:
-          config :premailex, html_parser: Premailex.HTMLParser.Floki
-          """
-        end
-    end
-  end
-
-  # Find the first available parser in order of preference
-  defp find_available_parser do
-    case Enum.find(@parsers_in_order, &parser_available?/1) do
-      nil ->
-        raise """
-        No HTML parser is available. Please add at least one of the following dependencies to your mix.exs:
-
-        - {:floki, "~> 0.19"}
-        - {:meeseeks, "~> 0.11"}
-        - {:lazy_html, "~> 0.1.8"}
-
-        Or explicitly configure a parser:
-        config :premailex, html_parser: Premailex.HTMLParser.Floki
-        """
-
-      parser ->
-        parser
-    end
-  end
-
-  # Check if a parser module is available by verifying its dependencies are loaded
-  defp parser_available?(Premailex.HTMLParser.Floki) do
-    Code.ensure_loaded?(Floki)
-  end
-
-  defp parser_available?(Premailex.HTMLParser.Meeseeks) do
-    Code.ensure_loaded?(Meeseeks)
-  end
-
-  defp parser_available?(Premailex.HTMLParser.LazyHTML) do
-    Code.ensure_loaded?(LazyHTML)
-  end
-
-  defp parser_available?(_), do: false
+  def text(tree), do: html_parser().text(tree)
 end
