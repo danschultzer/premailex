@@ -1,6 +1,7 @@
 defmodule Premailex.Mixfile do
   use Mix.Project
 
+  @source_url "https://github.com/danschultzer/premailex"
   @version "0.3.20"
 
   def project do
@@ -59,7 +60,7 @@ defmodule Premailex.Mixfile do
       maintainers: ["Dan Schultzer"],
       licenses: ["MIT"],
       links: %{
-        "GitHub" => "https://github.com/danschultzer/premailex",
+        "GitHub" => @source_url,
         "Sponsor" => "https://github.com/sponsors/danschultzer"
       },
       files: ~w(lib LICENSE mix.exs README.md)
@@ -69,12 +70,24 @@ defmodule Premailex.Mixfile do
   defp docs do
     [
       source_ref: "v#{@version}",
-      main: "README",
+      main: "Premailex",
       canonical: "http://hexdocs.pm/premailex",
-      source_url: "https://github.com/danschultzer/premailex",
+      source_url: @source_url,
       extras: [
-        "README.md": [filename: "README"],
         "CHANGELOG.md": [filename: "CHANGELOG"]
+      ],
+      skip_undefined_reference_warnings_on: [
+        "CHANGELOG.md"
+      ],
+      groups_for_modules: [
+        Parsers: [
+          Premailex.CSSParser,
+          Premailex.HTMLParser
+        ],
+        HTTP: [
+          Premailex.HTTPAdapter,
+          Premailex.HTTPAdapter.Httpc
+        ]
       ]
     ]
   end

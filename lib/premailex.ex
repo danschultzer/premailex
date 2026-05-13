@@ -1,7 +1,9 @@
 defmodule Premailex do
-  @moduledoc """
-  Documentation for Premailex.
-  """
+  @external_resource "README.md"
+  @moduledoc "README.md"
+             |> File.read!()
+             |> String.split("<!-- MDOC !-->")
+             |> Enum.fetch!(1)
 
   alias Premailex.HTMLParser
 
