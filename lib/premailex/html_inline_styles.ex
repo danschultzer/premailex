@@ -1,6 +1,6 @@
 defmodule Premailex.HTMLInlineStyles do
   @moduledoc """
-  Module that processes inline styling in HMTL.
+  Module that processes inline styling in HTML.
   """
   require Logger
 

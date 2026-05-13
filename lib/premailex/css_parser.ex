@@ -1,6 +1,13 @@
 defmodule Premailex.CSSParser do
   @moduledoc """
-  Module that handles CSS parsing with naive Regular Expression.
+  CSS parser used by Premailex.
+
+  ## Known limitations
+
+  The CSSParser is mostly naive and doesn't handle all edge cases such as
+  `content: "a;b"` rules. The CSS specificity calculation is regex-based and
+  intended for practical inlining precedence, not full Selectors Level 4
+  correctness.
   """
 
   @type rule :: %{directive: String.t(), value: String.t(), important?: boolean}

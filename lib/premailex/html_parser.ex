@@ -1,6 +1,6 @@
 defmodule Premailex.HTMLParser do
   @moduledoc """
-  Module that provide HTML parsing API using an underlying HTML parser library.
+  Module that provides HTML parsing API using an underlying HTML parser library.
 
   By default, premailex will try to use Floki, then LazyHTML, then Meeseeks
   (in that order) based on what's available.
@@ -15,7 +15,7 @@ defmodule Premailex.HTMLParser do
 
   @callback parse(binary()) :: html_tree()
   @callback all(html_tree(), selector()) :: [html_tree()]
-  @callback filter(html_tree(), selector()) :: [html_tree()]
+  @callback filter(html_tree(), selector()) :: html_tree()
   @callback to_string(html_tree()) :: binary()
   @callback text(html_tree()) :: binary()
 
@@ -78,10 +78,10 @@ defmodule Premailex.HTMLParser do
 
   ## Examples
 
-      iex> Premailex.HTMLParser.filter([{"html", [], [{"head", [], []}, {"body", [], [{"h1", [], ["Title"]}]}]}], "h1")
-      [{"html", [], [{"head", [], []}, {"body", [], []}]}]
+      iex> Premailex.HTMLParser.filter({"html", [], [{"head", [], []}, {"body", [], [{"h1", [], ["Title"]}]}]}, "h1")
+      {"html", [], [{"head", [], []}, {"body", [], []}]}
   """
-  @spec filter(html_tree(), selector()) :: [html_tree()]
+  @spec filter(html_tree(), selector()) :: html_tree()
   def filter(tree, selector), do: html_parser().filter(tree, selector)
 
   @doc """

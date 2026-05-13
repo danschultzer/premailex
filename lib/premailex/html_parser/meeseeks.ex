@@ -55,14 +55,18 @@ if Code.ensure_loaded?(Meeseeks) do
     @doc false
     def filter(tree, selector) do
       selector = CSS.compile_selectors(selector)
-      tree = Meeseeks.parse(tree, :tuple_tree)
+      parsed_tree = Meeseeks.parse(tree, :tuple_tree)
 
-      tree
+      parsed_tree
       |> Meeseeks.all(selector)
-      |> Enum.reduce(tree, fn e, acc ->
+      |> Enum.reduce(parsed_tree, fn e, acc ->
         Document.delete_node(acc, e.id)
       end)
       |> Meeseeks.tree()
+      |> then(fn
+        [filtered_tree] -> (is_list(tree) && [filtered_tree]) || filtered_tree
+        filtered_tree -> filtered_tree
+      end)
     end
   end
 end

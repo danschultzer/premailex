@@ -2,6 +2,8 @@
 
 [![Github CI](https://github.com/danschultzer/premailex/workflows/CI/badge.svg)](https://github.com/danschultzer/premailex/actions?query=workflow%3ACI) [![hexdocs.pm](https://img.shields.io/badge/api-docs-green.svg?style=flat)](https://hexdocs.pm/premailex) [![hex.pm](https://img.shields.io/hexpm/v/premailex.svg?style=flat)](https://hex.pm/packages/premailex) [![hex.pm downloads](https://img.shields.io/hexpm/dt/premailex.svg?style=flat)](https://hex.pm/packages/premailex)
 
+<!-- MDOC !-->
+
 Preflight for your HTML emails. Adds inline styling, and converts HTML to plain text.
 
 ## Features
@@ -10,25 +12,7 @@ Preflight for your HTML emails. Adds inline styling, and converts HTML to plain 
 * Add inline CSS properties from external `<link>` stylesheets
 * Transform HTML to plain text
 
-## Installation
-
-```elixir
-def deps do
-  [
-    # ...
-    {:premailex, "~> 0.3.20"},
-
-    # Optional, but recommended for SSL validation with :httpc
-    {:certifi, "~> 2.4"},
-    {:ssl_verify_fun, "~> 1.1"},
-    # ...
-  ]
-end
-```
-
-Run `mix deps.get` to install it.
-
-## Getting started
+## Usage
 
 Transform an HTML string to text:
 
@@ -109,6 +93,26 @@ config :premailex, html_parser: Premailex.HTMLParser.Meeseeks
 # or
 config :premailex, html_parser: Premailex.HTMLParser.LazyHTML
 ```
+
+<!-- MDOC !-->
+
+## Installation
+
+```elixir
+def deps do
+  [
+    # ...
+    {:premailex, "~> 0.3.20"},
+
+    # Optional, but recommended for SSL validation with :httpc
+    {:certifi, "~> 2.4"},
+    {:ssl_verify_fun, "~> 1.1"},
+    # ...
+  ]
+end
+```
+
+Run `mix deps.get` to install it.
 
 ## LICENSE
 
