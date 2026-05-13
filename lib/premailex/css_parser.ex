@@ -2,7 +2,6 @@ defmodule Premailex.CSSParser do
   @moduledoc """
   Module that handles CSS parsing with naive Regular Expression.
   """
-  require Logger
 
   @type rule :: %{directive: String.t(), value: String.t(), important?: boolean}
   @type rule_set :: %{rules: [rule], selector: String.t(), specificity: number}
@@ -64,24 +63,225 @@ defmodule Premailex.CSSParser do
 
   defp parse_selectors_rules([_, selector, rules]) do
     selector
-    # Ignore escaped commas
-    |> String.split(~r/(?<!\\),/)
-    |> normalize_selectors(selector)
+    |> split_selector_groups()
     |> Enum.map(&parse_selector_rules(&1, rules))
   end
 
-  defp normalize_selectors(selectors, original) do
-    Enum.reduce(selectors, [], fn selector, acc ->
-      case String.trim(selector) do
-        "" ->
-          Logger.debug("Empty selector found in #{inspect(String.trim(original))}. Ignoring.")
+  @doc """
+  Splits a comma-separated selector string into individual selectors.
 
-          acc
+  ## Examples
 
-        selector ->
-          acc ++ [selector]
-      end
-    end)
+      iex> Premailex.CSSParser.split_selector_groups("div, .foo")
+      ["div", ".foo"]
+
+      iex> Premailex.CSSParser.split_selector_groups("div > p, a[href]")
+      ["div > p", "a[href]"]
+  """
+  @spec split_selector_groups(String.t()) :: [String.t()]
+  def split_selector_groups(selector) do
+    selector
+    |> split_selector_groups("", 0, 0, nil, [])
+    |> Enum.reverse()
+  end
+
+  defp split_selector_groups(<<>>, buffer, _bracket_depth, _paren_depth, _quote_char, groups) do
+    flush_selector_group_buffer(buffer, groups)
+  end
+
+  defp split_selector_groups(
+         <<quote_char, rest::binary>>,
+         buffer,
+         bracket_depth,
+         paren_depth,
+         nil,
+         groups
+       )
+       when quote_char in [?\", ?'] do
+    split_selector_groups(
+      rest,
+      <<buffer::binary, quote_char>>,
+      bracket_depth,
+      paren_depth,
+      quote_char,
+      groups
+    )
+  end
+
+  defp split_selector_groups(
+         <<"\\", quote_char, rest::binary>>,
+         buffer,
+         bracket_depth,
+         paren_depth,
+         quote_char,
+         groups
+       ) do
+    split_selector_groups(
+      rest,
+      <<buffer::binary, "\\", quote_char>>,
+      bracket_depth,
+      paren_depth,
+      quote_char,
+      groups
+    )
+  end
+
+  defp split_selector_groups(
+         <<quote_char, rest::binary>>,
+         buffer,
+         bracket_depth,
+         paren_depth,
+         quote_char,
+         groups
+       ) do
+    split_selector_groups(
+      rest,
+      <<buffer::binary, quote_char>>,
+      bracket_depth,
+      paren_depth,
+      nil,
+      groups
+    )
+  end
+
+  defp split_selector_groups(
+         <<char, rest::binary>>,
+         buffer,
+         bracket_depth,
+         paren_depth,
+         quote_char,
+         groups
+       )
+       when quote_char != nil do
+    split_selector_groups(
+      rest,
+      <<buffer::binary, char>>,
+      bracket_depth,
+      paren_depth,
+      quote_char,
+      groups
+    )
+  end
+
+  defp split_selector_groups(
+         <<"\\,", rest::binary>>,
+         buffer,
+         bracket_depth,
+         paren_depth,
+         nil,
+         groups
+       ) do
+    split_selector_groups(
+      rest,
+      <<buffer::binary, "\\,">>,
+      bracket_depth,
+      paren_depth,
+      nil,
+      groups
+    )
+  end
+
+  defp split_selector_groups(
+         <<"[", rest::binary>>,
+         buffer,
+         bracket_depth,
+         paren_depth,
+         nil,
+         groups
+       ) do
+    split_selector_groups(
+      rest,
+      <<buffer::binary, "[">>,
+      bracket_depth + 1,
+      paren_depth,
+      nil,
+      groups
+    )
+  end
+
+  defp split_selector_groups(
+         <<"]", rest::binary>>,
+         buffer,
+         bracket_depth,
+         paren_depth,
+         nil,
+         groups
+       )
+       when bracket_depth > 0 do
+    split_selector_groups(
+      rest,
+      <<buffer::binary, "]">>,
+      bracket_depth - 1,
+      paren_depth,
+      nil,
+      groups
+    )
+  end
+
+  defp split_selector_groups(
+         <<"(", rest::binary>>,
+         buffer,
+         bracket_depth,
+         paren_depth,
+         nil,
+         groups
+       ) do
+    split_selector_groups(
+      rest,
+      <<buffer::binary, "(">>,
+      bracket_depth,
+      paren_depth + 1,
+      nil,
+      groups
+    )
+  end
+
+  defp split_selector_groups(
+         <<")", rest::binary>>,
+         buffer,
+         bracket_depth,
+         paren_depth,
+         nil,
+         groups
+       )
+       when paren_depth > 0 do
+    split_selector_groups(
+      rest,
+      <<buffer::binary, ")">>,
+      bracket_depth,
+      paren_depth - 1,
+      nil,
+      groups
+    )
+  end
+
+  defp split_selector_groups(<<",", rest::binary>>, buffer, 0, 0, nil, groups) do
+    split_selector_groups(rest, "", 0, 0, nil, flush_selector_group_buffer(buffer, groups))
+  end
+
+  defp split_selector_groups(
+         <<char, rest::binary>>,
+         buffer,
+         bracket_depth,
+         paren_depth,
+         quote_char,
+         groups
+       ) do
+    split_selector_groups(
+      rest,
+      <<buffer::binary, char>>,
+      bracket_depth,
+      paren_depth,
+      quote_char,
+      groups
+    )
+  end
+
+  defp flush_selector_group_buffer(buffer, groups) do
+    case String.trim(buffer) do
+      "" -> groups
+      trimmed -> [trimmed | groups]
+    end
   end
 
   defp parse_selector_rules(selector, rules) do
@@ -122,7 +322,7 @@ defmodule Premailex.CSSParser do
     %{
       directive: String.trim(directive),
       value: String.trim(value),
-      important?: String.contains?(value, "!important")
+      important?: important?(value)
     }
   end
 
@@ -132,8 +332,14 @@ defmodule Premailex.CSSParser do
     %{
       directive: "",
       value: String.trim(value),
-      important?: String.contains?(value, "!important")
+      important?: important?(value)
     }
+  end
+
+  defp important?(value) when is_binary(value) do
+    value
+    |> String.trim()
+    |> String.match?(~r/!important\s*$/i)
   end
 
   defp strip(string) do

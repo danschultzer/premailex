@@ -8,6 +8,8 @@ Requires Elixir 1.14 or higher.
 * Fixed invalid spec in `Premailex.HTMLInlineStyles.process/3`
 * `Floki` is now optional
 * Added support for `LazyHTML`
+* Added `Premailex.CSSParser.split_selector_groups/1` for selector group splitting
+* `Premailex.CSSParser.parse_rules/1` now does case insensitive, terminal `!important` detection
 
 ## v0.3.20 (2025-01-20)
 
