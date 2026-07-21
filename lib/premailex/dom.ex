@@ -185,9 +185,15 @@ defmodule Premailex.DOM do
   defp build_selector_items_lookup_table(selector_items) do
     initial = %{by_tag: %{}, by_class: %{}, by_id: %{}, universal: []}
 
-    Enum.reduce(selector_items, initial, fn selector_item, selector_items_table ->
+    selector_items
+    |> Enum.with_index()
+    |> Enum.reduce(initial, fn {selector_item, index}, selector_items_table ->
       compiled_groups = compile_selector_groups(selector_item.selector)
-      selector_item = Map.put(selector_item, :compiled_selector_groups, compiled_groups)
+
+      selector_item =
+        selector_item
+        |> Map.put(:compiled_selector_groups, compiled_groups)
+        |> Map.put(:source_index, index)
 
       Enum.reduce(
         compiled_groups,
@@ -278,6 +284,7 @@ defmodule Premailex.DOM do
                 &matches_selector_group?(context, &1, ancestors)
               )
             end)
+            |> restore_source_order()
             |> case do
               [] -> {tag, attrs, traversed_children}
               matched_items -> fun.({tag, attrs, traversed_children}, matched_items)
@@ -352,6 +359,22 @@ defmodule Premailex.DOM do
         |> :binary.split(" ", [:global])
         |> Enum.reduce(acc, &prepend_selector_items(&2, by_class, &1))
     end
+  end
+
+  # The lookup table buckets selector items by tag, id, and class, so matches
+  # are gathered per bucket rather than in the order the items were given in.
+  # Consumers rely on that order, e.g. the CSS cascade resolves declarations of
+  # equal specificity by source order, so it's restored here.
+  #
+  # A selector item is registered once per selector group, so it can be matched
+  # more than once. Duplicates are consecutive after the sort and dropped.
+  defp restore_source_order([]), do: []
+  defp restore_source_order([_selector_item] = selector_items), do: selector_items
+
+  defp restore_source_order(selector_items) do
+    selector_items
+    |> Enum.sort_by(& &1.source_index)
+    |> Enum.dedup_by(& &1.source_index)
   end
 
   defp matches_selector_group?(_context, [], _ancestors), do: false

@@ -158,6 +158,74 @@ defmodule Premailex.HTMLInlineStylesTest do
              |> Premailex.to_html() == ~s(<p class="lead" style="color: blue;">Text</p>)
     end
 
+    test "with equal specificity rules resolves by source order" do
+      tree = Premailex.parse(~s(<p class="a b">Text</p>))
+
+      assert tree
+             |> HTMLInlineStyles.process(
+               CSSParser.parse(".a { color: red; } .b { color: blue; }")
+             )
+             |> Premailex.to_html() == ~s(<p class="a b" style="color: blue;">Text</p>)
+
+      assert tree
+             |> HTMLInlineStyles.process(
+               CSSParser.parse(".b { color: blue; } .a { color: red; }")
+             )
+             |> Premailex.to_html() == ~s(<p class="a b" style="color: red;">Text</p>)
+    end
+
+    test "with equal specificity rules ignores the order of the class attribute" do
+      css_rules = CSSParser.parse(".a { color: red; } .b { color: blue; }")
+
+      assert ~s(<p class="a b">Text</p>)
+             |> Premailex.parse()
+             |> HTMLInlineStyles.process(css_rules)
+             |> Premailex.to_html() == ~s(<p class="a b" style="color: blue;">Text</p>)
+
+      assert ~s(<p class="b a">Text</p>)
+             |> Premailex.parse()
+             |> HTMLInlineStyles.process(css_rules)
+             |> Premailex.to_html() == ~s(<p class="b a" style="color: blue;">Text</p>)
+    end
+
+    test "with duplicate selector resolves by source order" do
+      tree = Premailex.parse(~s(<p class="a">Text</p>))
+
+      assert tree
+             |> HTMLInlineStyles.process(
+               CSSParser.parse(".a { color: red; } .a { color: blue; }")
+             )
+             |> Premailex.to_html() == ~s(<p class="a" style="color: blue;">Text</p>)
+    end
+
+    test "with equal specificity rules in different selector types" do
+      # `.a` is matched by class and `[data-x]` by the universal bucket, both
+      # with a specificity of {0, 0, 1, 0}
+      tree = Premailex.parse(~s(<p class="a" data-x="1">Text</p>))
+
+      assert tree
+             |> HTMLInlineStyles.process(
+               CSSParser.parse(".a { color: red; } [data-x] { color: blue; }")
+             )
+             |> Premailex.to_html() == ~s(<p class="a" data-x="1" style="color: blue;">Text</p>)
+
+      assert tree
+             |> HTMLInlineStyles.process(
+               CSSParser.parse("[data-x] { color: blue; } .a { color: red; }")
+             )
+             |> Premailex.to_html() == ~s(<p class="a" data-x="1" style="color: red;">Text</p>)
+    end
+
+    test "with higher specificity rule first takes precedence over source order" do
+      tree = Premailex.parse(~s(<p class="a b">Text</p>))
+
+      assert tree
+             |> HTMLInlineStyles.process(
+               CSSParser.parse("p.a { color: red; } .b { color: blue; }")
+             )
+             |> Premailex.to_html() == ~s(<p class="a b" style="color: red;">Text</p>)
+    end
+
     test "with wildcard rule" do
       tree =
         Premailex.parse("""
