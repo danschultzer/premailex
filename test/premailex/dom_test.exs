@@ -302,6 +302,34 @@ defmodule Premailex.DOMTest do
       assert [{"p", [{"data-count", "1"} | _], ["Outside div"]}] = DOM.all(result, "section > p")
     end
 
+    test "with multiple selector items that match the same element", %{tree: tree} do
+      rules = CSSParser.parse(".intro { x: 1; } .featured { x: 2; } [data-kind] { x: 3; }")
+
+      result =
+        DOM.traverse_with_matching_items(tree, rules, fn {tag, attrs, children}, matched_rules ->
+          selectors = Enum.map(matched_rules, & &1.selector)
+
+          {tag, [{"data-selectors", Enum.join(selectors, ",")} | attrs], children}
+        end)
+
+      assert [{"p", [{"data-selectors", ".intro,.featured,[data-kind]"} | _], [_]}] =
+               DOM.all(result, ".intro.featured")
+
+      reversed_rules =
+        CSSParser.parse(".featured { x: 1; } [data-kind] { x: 2; } .intro { x: 3; }")
+
+      reversed_result =
+        DOM.traverse_with_matching_items(tree, reversed_rules, fn {tag, attrs, children},
+                                                                  matched_rules ->
+          selectors = Enum.map(matched_rules, & &1.selector)
+
+          {tag, [{"data-selectors", Enum.join(selectors, ",")} | attrs], children}
+        end)
+
+      assert [{"p", [{"data-selectors", ".featured,[data-kind],.intro"} | _], [_]}] =
+               DOM.all(reversed_result, ".intro.featured")
+    end
+
     test "with no selector items", %{tree: tree} do
       assert DOM.traverse_with_matching_items(tree, [], fn _element, _matched_rules ->
                raise "should not be called"
