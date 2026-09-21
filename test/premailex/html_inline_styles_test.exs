@@ -158,6 +158,29 @@ defmodule Premailex.HTMLInlineStylesTest do
              |> Premailex.to_html() == ~s(<p class="lead" style="color: blue;">Text</p>)
     end
 
+    test "with css with equal specificity rules" do
+      tree = Premailex.parse(~s(<p class="a b">Text</p>))
+
+      assert tree
+             |> HTMLInlineStyles.process(
+               CSSParser.parse(".a { color: red; } .b { color: blue; }")
+             )
+             |> Premailex.to_html() == ~s(<p class="a b" style="color: blue;">Text</p>)
+
+      assert tree
+             |> HTMLInlineStyles.process(
+               CSSParser.parse(".b { color: blue; } .a { color: red; }")
+             )
+             |> Premailex.to_html() == ~s(<p class="a b" style="color: red;">Text</p>)
+
+      assert ~s(<p class="b a">Text</p>)
+             |> Premailex.parse()
+             |> HTMLInlineStyles.process(
+               CSSParser.parse(".a { color: red; } .b { color: blue; }")
+             )
+             |> Premailex.to_html() == ~s(<p class="b a" style="color: blue;">Text</p>)
+    end
+
     test "with wildcard rule" do
       tree =
         Premailex.parse("""

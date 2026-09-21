@@ -185,16 +185,27 @@ defmodule Premailex.DOM do
   defp build_selector_items_lookup_table(selector_items) do
     initial = %{by_tag: %{}, by_class: %{}, by_id: %{}, universal: []}
 
-    Enum.reduce(selector_items, initial, fn selector_item, selector_items_table ->
-      compiled_groups = compile_selector_groups(selector_item.selector)
-      selector_item = Map.put(selector_item, :compiled_selector_groups, compiled_groups)
+    {lookup_table, _source_index} =
+      Enum.reduce(selector_items, {initial, 0}, fn selector_item,
+                                                   {selector_items_table, source_index} ->
+        compiled_groups = compile_selector_groups(selector_item.selector)
 
-      Enum.reduce(
-        compiled_groups,
-        selector_items_table,
-        &register_table_selector_item(&2, &1, selector_item)
-      )
-    end)
+        selector_item =
+          selector_item
+          |> Map.put(:compiled_selector_groups, compiled_groups)
+          |> Map.put(:source_index, source_index)
+
+        selector_items_table =
+          Enum.reduce(
+            compiled_groups,
+            selector_items_table,
+            &register_table_selector_item(&2, &1, selector_item)
+          )
+
+        {selector_items_table, source_index + 1}
+      end)
+
+    lookup_table
   end
 
   defp compile_selector_groups(selector) do
@@ -278,6 +289,7 @@ defmodule Premailex.DOM do
                 &matches_selector_group?(context, &1, ancestors)
               )
             end)
+            |> Enum.sort_by(& &1.source_index)
             |> case do
               [] -> {tag, attrs, traversed_children}
               matched_items -> fun.({tag, attrs, traversed_children}, matched_items)

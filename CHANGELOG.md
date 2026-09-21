@@ -5,6 +5,7 @@
 ### Bug fixes
 
 * `Premailex.HTMLParser.Meeseeks.parse/1` no longer raises `MatchError` for document fragments that contains head level content such as `<style>`, `<meta>`, `<link>`, or `<title>`
+* `Premailex.DOM.traverse_with_matching_items/3` now preserves the order of appearance for matching selector items
 
 ## v1.0.0 (2026-05-24)
 
