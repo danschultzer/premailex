@@ -33,7 +33,7 @@ defmodule PremailexTest do
     end
 
     test "when external styles can't be loaded due to network error", %{input: input, url: url} do
-      TestServer.stop()
+      TestServer.HTTP.stop()
 
       assert CaptureLog.capture_log(fn ->
                refute Premailex.to_inline_css(input) =~ "color: black"
@@ -46,7 +46,7 @@ defmodule PremailexTest do
       assert CaptureLog.capture_log(fn ->
                refute Premailex.to_inline_css(input) =~ "color: black"
              end) =~
-               "Ignoring #{TestServer.url("/styles.css")} styles due to unexpected HTTP response status: 404"
+               "Ignoring #{TestServer.HTTP.url("/styles.css")} styles due to unexpected HTTP response status: 404"
     end
 
     @tag external_css_scheme: :https
@@ -55,7 +55,7 @@ defmodule PremailexTest do
                refute Premailex.to_inline_css(input) =~ "color: black"
              end) =~ ":unknown_ca"
 
-      TestServer.stop()
+      TestServer.HTTP.stop()
     end
 
     @tag external_css_scheme: :https
@@ -67,7 +67,7 @@ defmodule PremailexTest do
             ssl: [
               verify: :verify_peer,
               depth: 99,
-              cacerts: TestServer.x509_suite().cacerts,
+              cacerts: TestServer.HTTP.cacerts(),
               verify_fun: {&:ssl_verify_hostname.verify_fun/3, check_hostname: ~c"localhost"}
             ]
           ]
@@ -95,16 +95,16 @@ defmodule PremailexTest do
   end
 
   defp setup_external_css_endpoint(context) do
-    context[:external_css_scheme] == :https && TestServer.start(scheme: :https)
+    context[:external_css_scheme] == :https && TestServer.HTTP.start(scheme: :https)
     {status, body} = context[:external_css_response] || {200, @external_css_content}
 
-    TestServer.add("/styles.css",
+    TestServer.HTTP.handle("/styles.css",
       to: fn conn ->
         Plug.Conn.send_resp(conn, status, body)
       end
     )
 
-    url = TestServer.url("/styles.css")
+    url = TestServer.HTTP.url("/styles.css")
     input = String.replace(@input, "http://localhost/styles.css", url)
 
     {:ok, input: input, url: url}

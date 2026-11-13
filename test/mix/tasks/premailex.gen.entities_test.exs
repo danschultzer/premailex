@@ -27,13 +27,13 @@ if Code.ensure_loaded?(JSON) do
       File.rm_rf!(output_path)
       File.mkdir_p!(output_path)
 
-      TestServer.add("/entities.json",
+      TestServer.HTTP.handle("/entities.json",
         to: fn conn ->
           Plug.Conn.send_resp(conn, status, body)
         end
       )
 
-      {:ok, url: TestServer.url("/entities.json"), output: Path.join(output_path, "entities.txt")}
+      {:ok, url: TestServer.HTTP.url("/entities.json"), output: Path.join(output_path, "entities.txt")}
     end
 
     test "writes file", %{url: url, output: output} do
@@ -62,7 +62,7 @@ if Code.ensure_loaded?(JSON) do
     end
 
     test "when url not accessible", %{url: url, output: output} do
-      TestServer.stop()
+      TestServer.HTTP.stop()
 
       assert_raise Mix.Error, ~r/Request to #{url} failed/, fn ->
         assert capture_io(fn ->
