@@ -40,7 +40,7 @@ defmodule Premailex.Mixfile do
       # Development and test
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
-      {:test_server, "~> 0.1.5", only: [:test]},
+      {:test_server, github: "danschultzer/test_server", only: [:test]},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false}
     ]
   end
