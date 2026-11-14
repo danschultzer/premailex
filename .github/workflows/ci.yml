@@ -42,7 +42,7 @@ jobs:
             os: ubuntu-latest
           - otp: "24"
             elixir: "1.15"
-            os: ubuntu-latest
+            os: ubuntu-24.04
 
     runs-on: ${{ matrix.version.os }}
     name: OTP ${{matrix.version.otp}} / Elixir ${{matrix.version.elixir}} / ${{matrix.html_parser}}
