@@ -42,13 +42,13 @@ defmodule Premailex.HTMLParser.XmerlTest do
     end
 
     test "with malformed XML" do
-      assert_raise ArgumentError, ~r/could not parse the HTML/, fn ->
-        Xmerl.parse("<html><body><div><p>broken</div></body></html>")
-      end
+      assert_raise ArgumentError,
+                   ~r/could not parse HTML with Premailex.HTMLParser.Xmerl: EndTag: :div, does not match StartTag/,
+                   fn -> Xmerl.parse("<html><body><div><p>broken</div></body></html>") end
 
-      assert_raise ArgumentError, ~r/could not parse the HTML/, fn ->
-        Xmerl.parse("<p data-x=a>Paragraph</p>")
-      end
+      assert_raise ArgumentError,
+                   ~r/could not parse HTML with Premailex.HTMLParser.Xmerl: ', \" or whitespace expected/,
+                   fn -> Xmerl.parse("<p data-x=a>Paragraph</p>") end
     end
 
     test "with namespaced elements and attributes" do

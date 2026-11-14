@@ -12,7 +12,7 @@ defmodule Premailex.HTMLParser do
   @doc """
   Parses an HTML string into a `t:Premailex.html_tree/0`.
 
-  Adapters raise `ArgumentError` when the input cannot be parsed.
+  Parsers raise `ArgumentError` when the input cannot be parsed.
   """
   @callback parse(Premailex.html()) :: Premailex.html_tree()
 

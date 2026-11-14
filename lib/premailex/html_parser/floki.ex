@@ -24,8 +24,8 @@ if Code.ensure_loaded?(Floki) do
         {:ok, document} ->
           document
 
-        {:error, reason} ->
-          raise ArgumentError, "Floki failed to parse HTML: #{inspect(reason)}"
+        {:error, reason} when is_binary(reason) ->
+          raise ArgumentError, "could not parse HTML with Floki: #{reason}"
       end
     end
 

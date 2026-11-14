@@ -38,9 +38,7 @@ defmodule Benchmark do
   end
 
   defp init!(columns) do
-    html_parser =
-      System.get_env("HTML_PARSER") ||
-        raise "Missing HTML_PARSER environment variable. Set it, e.g. `HTML_PARSER=Xmerl`."
+    html_parser = System.fetch_env!("HTML_PARSER")
 
     Application.put_env(
       :premailex,

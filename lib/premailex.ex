@@ -9,6 +9,7 @@ defmodule Premailex do
              |> then(&Regex.replace(~r/\[(`[^`]+`)\]\([^)]+\)/, &1, "\\1"))
              # Convert Markdown OTP module references to ExDoc format.
              |> then(&Regex.replace(~r/`(:[a-z]+)`/, &1, "`m:\\1`"))
+             |> String.trim()
 
   require Logger
 
@@ -39,7 +40,7 @@ defmodule Premailex do
   defp html_parser do
     case Application.get_env(:premailex, :html_parser) || default_html_parser() do
       mod when is_atom(mod) -> mod
-      other -> raise "Invalid `:html_parser` environment value: #{inspect(other)}"
+      other -> raise "expected :html_parser to be an atom, got: #{inspect(other)}"
     end
   end
 

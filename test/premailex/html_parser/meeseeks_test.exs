@@ -71,9 +71,14 @@ defmodule Premailex.HTMLParser.MeeseeksTest do
     end
 
     test "with invalid HTML" do
-      assert_raise ArgumentError, ~r/Meeseeks failed to parse HTML/, fn ->
-        Meeseeks.parse(<<0xFF, 0xFE>>)
-      end
+      error = assert_raise ArgumentError, fn -> Meeseeks.parse(<<0xFF, 0xFE>>) end
+      message = Exception.message(error)
+
+      assert message =~ "could not parse HTML with Meeseeks: \n\n"
+      assert message =~ "\n  Type: :parser"
+      assert message =~ "\n  Reason: :invalid_input"
+      assert message =~ "\n    input: <<255, 254>>"
+      assert message =~ "\n    description: \"input is not valid utf8\""
     end
   end
 

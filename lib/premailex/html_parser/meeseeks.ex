@@ -22,8 +22,8 @@ if Code.ensure_loaded?(Meeseeks) do
           |> Meeseeks.tree()
           |> unwrap_fragment(html)
 
-        {:error, reason} ->
-          raise ArgumentError, "Meeseeks failed to parse HTML: #{inspect(reason)}"
+        {:error, reason} when is_exception(reason) ->
+          raise ArgumentError, "could not parse HTML with Meeseeks: #{Exception.message(reason)}"
       end
     end
 

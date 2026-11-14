@@ -108,15 +108,13 @@ defmodule Premailex.HTMLParser.Xmerl do
       {:ok, %{result: result}, _rest} ->
         result
 
-      {:fatal_error, _location, reason, _end_tags, _state} ->
+      {:fatal_error, _location, reason, _end_tags, _state} when is_list(reason) ->
         raise ArgumentError,
               """
-              #{__MODULE__} could not parse the HTML.
+              could not parse HTML with #{inspect(__MODULE__)}: #{to_string(reason)}
 
-              The built-in fallback parser only supports simple, XML-like HTML
+              The built-in fallback parser only supports well-formed, XML-like HTML.
               For more permissive HTML parsing, add LazyHTML, Floki, or Meeseeks to your dependencies.
-
-              Original error: #{inspect(reason)}
               """
     end
   end
